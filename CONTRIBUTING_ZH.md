@@ -19,7 +19,7 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/YOUR_ORG/agentshield.git
+git clone https://github.com/hidearmoon/agentshield.git
 cd agentshield
 
 # 启动依赖服务

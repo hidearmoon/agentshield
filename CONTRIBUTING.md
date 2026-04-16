@@ -19,7 +19,7 @@ Be respectful. Be constructive. Assume good intent. We are building security inf
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_ORG/agentshield.git
+git clone https://github.com/hidearmoon/agentshield.git
 cd agentshield
 
 # Start dependencies

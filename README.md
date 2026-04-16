@@ -79,7 +79,7 @@ from agentshield.integrations import LangChainShield, CrewAIShield, AutoGenShiel
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_ORG/agentshield.git
+git clone https://github.com/hidearmoon/agentshield.git
 cd agentshield
 
 # Start infrastructure (PostgreSQL + ClickHouse + Core Engine)
@@ -329,7 +329,7 @@ AgentShield's architecture is designed to be agent-agnostic — anywhere there's
 | **OpenTelemetry** | Trace processor for security span injection | Planned |
 | **Webhook / Event-driven** | Passive audit mode for any system with HTTP callbacks | Planned |
 
-If your agent framework, orchestrator, or tool platform isn't listed, [open an issue](https://github.com/YOUR_ORG/agentshield/issues) — we'll help you figure out where AgentShield plugs in.
+If your agent framework, orchestrator, or tool platform isn't listed, [open an issue](https://github.com/hidearmoon/agentshield/issues) — we'll help you figure out where AgentShield plugs in.
 
 ## Roadmap
 
