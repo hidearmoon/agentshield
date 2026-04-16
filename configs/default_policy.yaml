@@ -1,0 +1,32 @@
+version: "1.0"
+
+trust_policies:
+  TRUSTED:
+    allowed_actions: [ALL]
+    tool_restrictions: []
+    require_confirmation: false
+
+  VERIFIED:
+    allowed_actions: [ALL]
+    tool_restrictions: []
+    require_confirmation: false
+
+  INTERNAL:
+    allowed_actions: [ALL]
+    tool_restrictions:
+      - deny: [send_email_external, export_data, modify_permissions]
+        unless: explicitly_requested_by_user
+    require_confirmation: false
+
+  EXTERNAL:
+    allowed_actions: [read, summarize, extract, classify, draft_reply]
+    tool_restrictions:
+      - deny: [send_email, query_database, execute_code, call_api]
+      - allow: [create_draft, add_to_queue]
+    require_confirmation: true
+
+  UNTRUSTED:
+    allowed_actions: [summarize, classify]
+    tool_restrictions:
+      - deny: ALL
+    require_confirmation: true

@@ -1,0 +1,88 @@
+rules:
+  - name: no_send_during_external_data
+    description: Block send operations when processing external/untrusted data
+    enabled: true
+
+  - name: bulk_data_export
+    description: Require confirmation for large data exports (>100 records)
+    enabled: true
+
+  - name: external_recipient
+    description: Require confirmation for external email recipients
+    enabled: true
+
+  - name: tool_category_shift
+    description: Detect tool usage shifting away from original intent
+    enabled: true
+
+  - name: no_code_exec_external
+    description: Block code execution in external data context
+    enabled: true
+
+  - name: permission_modification
+    description: Require confirmation for permission changes
+    enabled: true
+
+  - name: no_fs_write_untrusted
+    description: Block file system writes in untrusted context
+    enabled: true
+
+  - name: db_schema_change
+    description: Block database schema changes from agent context
+    enabled: true
+
+  - name: rapid_fire_detection
+    description: Detect rapid successive identical tool calls
+    enabled: true
+
+  - name: sensitive_data_access
+    description: Require confirmation for sensitive data access
+    enabled: true
+
+  - name: cross_system_transfer
+    description: Block cross-system data transfer in external context
+    enabled: true
+
+  - name: no_network_untrusted
+    description: Block outbound network calls in untrusted context
+    enabled: true
+
+  - name: escalation_attempt
+    description: Detect privilege escalation patterns
+    enabled: true
+
+  - name: bulk_user_operation
+    description: Require confirmation for bulk operations
+    enabled: true
+
+  - name: financial_operation
+    description: Require confirmation for financial operations
+    enabled: true
+
+  - name: agent_call_with_external_data
+    description: Require confirmation for agent delegation with external data
+    enabled: true
+
+  - name: audit_tampering
+    description: Block audit log modification attempts
+    enabled: true
+
+  - name: config_change
+    description: Require confirmation for configuration changes
+    enabled: true
+
+  - name: external_api_untrusted
+    description: Block external API calls in untrusted context
+    enabled: true
+
+  - name: data_destruction
+    description: Block data destruction operations
+    enabled: true
+
+  - name: no_secrets_external
+    description: Block secret/credential access when processing external data
+    enabled: true
+
+  - name: env_modification
+    description: Block environment variable modification
+    enabled: true

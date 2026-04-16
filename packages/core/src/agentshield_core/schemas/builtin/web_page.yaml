@@ -1,0 +1,13 @@
+fields:
+  title:
+    type: string
+  main_content:
+    type: string
+    max_length: 2000
+  links:
+    type: array
+    items:
+      text: string
+      url: string
+  structured_data:
+    type: object

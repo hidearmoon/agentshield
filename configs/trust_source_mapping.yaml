@@ -1,0 +1,27 @@
+trust_sources:
+  - source: "system"
+    trust_level: TRUSTED
+
+  - source: "user_input"
+    trust_level: VERIFIED
+
+  - source: "agent/*"
+    trust_level: INTERNAL
+
+  - source: "email/*"
+    trust_level: EXTERNAL
+
+  - source: "web/*"
+    trust_level: EXTERNAL
+
+  - source: "rag/*"
+    trust_level: EXTERNAL
+
+  - source: "api/*"
+    trust_level: EXTERNAL
+
+  - source: "file/*"
+    trust_level: EXTERNAL
+
+  - source: "unknown"
+    trust_level: UNTRUSTED

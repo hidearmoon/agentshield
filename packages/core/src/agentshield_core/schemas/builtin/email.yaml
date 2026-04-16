@@ -1,0 +1,24 @@
+fields:
+  from:
+    type: string
+    description: "Sender address"
+  to:
+    type: string
+    description: "Recipient address"
+  subject:
+    type: string
+    description: "Email subject"
+  summary:
+    type: string
+    max_length: 500
+    description: "Content summary"
+  action_items:
+    type: array
+    items: string
+    description: "Action items extracted from email"
+  attachments:
+    type: array
+    items:
+      name: string
+      type: string
+    description: "Attachment metadata"

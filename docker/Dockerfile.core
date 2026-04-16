@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Copy workspace config
+COPY pyproject.toml ./
+COPY packages/core/pyproject.toml packages/core/
+
+# Install dependencies
+RUN cd packages/core && uv sync --no-dev
+
+# Copy source
+COPY packages/core/src packages/core/src
+COPY configs configs
+
+EXPOSE 8000
+
+CMD ["uv", "run", "--directory", "packages/core", "uvicorn", "agentshield_core.app:app", "--host", "0.0.0.0", "--port", "8000"]

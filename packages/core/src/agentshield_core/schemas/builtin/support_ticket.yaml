@@ -1,0 +1,14 @@
+fields:
+  ticket_id:
+    type: string
+  customer:
+    type: string
+  issue_category:
+    type: string
+    enum: [billing, technical, account, other]
+  description:
+    type: string
+    max_length: 1000
+  priority:
+    type: string
+    enum: [low, medium, high, critical]

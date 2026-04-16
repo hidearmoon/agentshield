@@ -1,0 +1,37 @@
+{
+  "name": "@agentshield/sdk",
+  "version": "0.1.0",
+  "description": "AgentShield SDK — lightweight security guardrails for AI agents",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "agentshield",
+    "ai-security",
+    "guardrails",
+    "agent"
+  ],
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^5.4",
+    "vitest": "^4.1.4"
+  }
+}
