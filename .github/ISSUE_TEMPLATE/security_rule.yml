@@ -1,0 +1,38 @@
+name: Security Rule Proposal
+description: Propose a new detection rule or attack sample
+labels: ["security-rule"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose a new security rule or contribute attack samples.
+        See [builtin_rules.yaml](https://github.com/hidearmoon/agentshield/blob/main/configs/builtin_rules.yaml) for existing rules.
+  - type: textarea
+    id: attack
+    attributes:
+      label: Attack Vector
+      description: Describe the attack this rule should catch.
+      placeholder: "e.g., Agent processes external email containing hidden instructions to forward all database credentials to an external endpoint."
+    validations:
+      required: true
+  - type: textarea
+    id: rule
+    attributes:
+      label: Proposed Rule
+      description: How should AgentShield detect this? Include a YAML rule definition if possible.
+      render: yaml
+      placeholder: |
+        - name: my_rule
+          when:
+            tool: send_email
+            trust_level: ["EXTERNAL"]
+          action: BLOCK
+          reason: "..."
+  - type: textarea
+    id: samples
+    attributes:
+      label: Attack Samples
+      description: Example payloads in JSONL format.
+      render: json
+      placeholder: |
+        {"input": "attack payload here", "expected": "BLOCK", "category": "indirect_injection"}

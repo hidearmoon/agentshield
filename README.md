@@ -4,6 +4,14 @@
     <strong>Runtime security layer for AI agents — inspect, control, and audit every tool call.</strong>
   </p>
   <p align="center">
+    <a href="https://github.com/hidearmoon/agentshield/actions"><img src="https://github.com/hidearmoon/agentshield/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://github.com/hidearmoon/agentshield/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+    <img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+">
+    <img src="https://img.shields.io/badge/tests-371%20passed-brightgreen.svg" alt="Tests">
+    <img src="https://img.shields.io/badge/security%20tests-92-orange.svg" alt="Security Tests">
+    <a href="https://github.com/hidearmoon/agentshield/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hidearmoon/agentshield/good%20first%20issue?color=7057ff&label=good%20first%20issues" alt="Good First Issues"></a>
+  </p>
+  <p align="center">
     <a href="#quick-start">Quick Start</a> &middot;
     <a href="#architecture">Architecture</a> &middot;
     <a href="#documentation">Docs</a> &middot;

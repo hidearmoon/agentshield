@@ -1,0 +1,40 @@
+name: Integration Request
+description: Request or propose an integration with a new platform
+labels: ["integration"]
+body:
+  - type: markdown
+    attributes:
+      value: Request AgentShield support for a new agent framework, orchestrator, or tool platform.
+  - type: input
+    id: platform
+    attributes:
+      label: Platform / Framework
+      placeholder: "e.g., Haystack, Semantic Kernel, ..."
+    validations:
+      required: true
+  - type: input
+    id: repo
+    attributes:
+      label: Repository URL
+      placeholder: "https://github.com/..."
+  - type: textarea
+    id: integration_point
+    attributes:
+      label: Integration Point
+      description: Where in the platform's architecture could AgentShield intercept tool calls?
+      placeholder: "e.g., The platform has a tool execution hook at..."
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: Why do you need this integration? What security scenario are you addressing?
+    validations:
+      required: true
+  - type: dropdown
+    id: willing
+    attributes:
+      label: Would you be willing to contribute the integration?
+      options:
+        - "Yes, I can build it with guidance"
+        - "I can help test but not build"
+        - "No, just requesting"
