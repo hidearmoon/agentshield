@@ -1,0 +1,29 @@
+{
+  "name": "@agentshield/openclaw-plugin",
+  "version": "0.1.0",
+  "description": "AgentShield plugin for OpenClaw — runtime security for every tool call",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "openclaw",
+    "agentshield",
+    "ai-security",
+    "agent-safety",
+    "prompt-injection",
+    "guardrails"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "agentshield": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4",
+    "vitest": "^2.0"
+  }
+}

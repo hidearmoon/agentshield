@@ -1,0 +1,30 @@
+{
+  "name": "n8n-nodes-agentshield",
+  "version": "0.1.0",
+  "description": "AgentShield security check node for n8n — guard AI agent tool calls",
+  "keywords": [
+    "n8n-community-node-package",
+    "agentshield",
+    "ai-security",
+    "agent-safety"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/nodes/AgentShieldNode.js",
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "nodes": [
+      "dist/nodes/AgentShieldNode.js"
+    ],
+    "credentials": [
+      "dist/credentials/AgentShieldApi.js"
+    ]
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "n8n-workflow": "*",
+    "typescript": "^5.4"
+  }
+}

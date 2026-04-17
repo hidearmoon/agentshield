@@ -185,7 +185,13 @@ agentshield/
 │   ├── console/           # Management UI (React + FastAPI backend)
 │   ├── sdk-python/        # Python SDK with framework integrations
 │   ├── sdk-typescript/    # TypeScript SDK
-│   └── sdk-go/            # Go SDK
+│   ├── sdk-go/            # Go SDK
+│   └── integrations/      # Platform-specific integrations
+│       ├── openclaw/      # OpenClaw plugin (before_tool_call hook)
+│       ├── mcp/           # MCP guard (decorator + proxy patterns)
+│       ├── dify/          # Dify ToolEngine patch
+│       ├── autogpt/       # AutoGPT Platform security block
+│       └── n8n/           # n8n community node
 ├── configs/               # Default policies and built-in rules
 ├── docker/                # Docker Compose for full-stack deployment
 ├── examples/              # Quick start and integration examples
@@ -323,8 +329,11 @@ AgentShield's architecture is designed to be agent-agnostic — anywhere there's
 
 | Platform | Integration Point | Status |
 |----------|-------------------|--------|
-| **OpenClaw** | Plugin SDK `before_tool_call` hook | Planned — help wanted |
-| **MCP (Model Context Protocol)** | Tool guard middleware for MCP servers | Planned |
+| **OpenClaw** | Plugin SDK `before_tool_call` hook | Available |
+| **MCP (Model Context Protocol)** | Decorator `@shield.guard` + stdio proxy | Available |
+| **Dify** | `ToolEngine._invoke` patch — covers all tool types | Available |
+| **AutoGPT Platform** | Security check Block with dual output (allowed/blocked) | Available |
+| **n8n** | Community node with Allowed/Blocked routing | Available |
 | **API Gateways** (Kong, Envoy) | Custom filter / plugin | Planned |
 | **OpenTelemetry** | Trace processor for security span injection | Planned |
 | **Webhook / Event-driven** | Passive audit mode for any system with HTTP callbacks | Planned |
@@ -333,8 +342,11 @@ If your agent framework, orchestrator, or tool platform isn't listed, [open an i
 
 ## Roadmap
 
-- [ ] OpenClaw plugin integration
-- [ ] MCP (Model Context Protocol) tool guard
+- [x] OpenClaw plugin integration
+- [x] MCP (Model Context Protocol) tool guard
+- [x] Dify ToolEngine integration
+- [x] AutoGPT Platform security block
+- [x] n8n community node
 - [ ] OpenTelemetry-native trace export
 - [ ] Grafana dashboard templates
 - [ ] Kubernetes Helm chart

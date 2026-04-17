@@ -1,0 +1,55 @@
+{
+  "id": "agentshield",
+  "name": "AgentShield Security Guard",
+  "version": "0.1.0",
+  "description": "Runtime security layer — inspects every tool call for intent consistency, trust violations, and injection attacks before execution.",
+  "author": "AgentShield Contributors",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/hidearmoon/agentshield",
+  "entry": "dist/index.js",
+  "capabilities": ["hooks"],
+  "config": {
+    "type": "object",
+    "properties": {
+      "coreUrl": {
+        "type": "string",
+        "default": "http://localhost:8000",
+        "description": "URL of the AgentShield core engine"
+      },
+      "apiKey": {
+        "type": "string",
+        "description": "AgentShield API key"
+      },
+      "agentId": {
+        "type": "string",
+        "default": "openclaw",
+        "description": "Agent identifier for trace grouping"
+      },
+      "trustMapping": {
+        "type": "object",
+        "default": {
+          "user_input": "VERIFIED",
+          "whatsapp": "EXTERNAL",
+          "telegram": "EXTERNAL",
+          "discord": "EXTERNAL",
+          "slack": "INTERNAL",
+          "email": "EXTERNAL",
+          "web": "EXTERNAL",
+          "system": "TRUSTED"
+        },
+        "description": "Map OpenClaw channel sources to AgentShield trust levels"
+      },
+      "blockMessage": {
+        "type": "string",
+        "default": "This action was blocked by AgentShield security policy.",
+        "description": "Message shown to the user when a tool call is blocked"
+      },
+      "confirmTimeout": {
+        "type": "number",
+        "default": 30000,
+        "description": "Timeout in ms for REQUIRE_CONFIRMATION decisions"
+      }
+    },
+    "required": ["apiKey"]
+  }
+}
