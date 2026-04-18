@@ -1,7 +1,7 @@
 {
-  "name": "@agentshield/sdk",
+  "name": "@agentguard/sdk",
   "version": "0.1.0",
-  "description": "AgentShield SDK — lightweight security guardrails for AI agents",
+  "description": "agentguard SDK — lightweight security guardrails for AI agents",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,7 +20,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "agentshield",
+    "agentguard",
     "ai-security",
     "guardrails",
     "agent"

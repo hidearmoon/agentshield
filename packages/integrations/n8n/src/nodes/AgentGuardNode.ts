@@ -24,7 +24,7 @@ import type {
 export class AgentGuardNode implements INodeType {
   description: INodeTypeDescription = {
     displayName: "AgentGuard Security Check",
-    name: "agentShield",
+    name: "agentguard",
     icon: "file:agentguard.svg",
     group: ["transform"],
     version: 1,
@@ -38,7 +38,7 @@ export class AgentGuardNode implements INodeType {
     outputNames: ["Allowed", "Blocked"],
     credentials: [
       {
-        name: "agentShieldApi",
+        name: "agentguardApi",
         required: true,
       },
     ],
@@ -87,7 +87,7 @@ export class AgentGuardNode implements INodeType {
     const allowed: INodeExecutionData[] = [];
     const blocked: INodeExecutionData[] = [];
 
-    const credentials = await this.getCredentials("agentShieldApi");
+    const credentials = await this.getCredentials("agentguardApi");
     const baseUrl = (credentials.baseUrl as string || "http://localhost:8000").replace(/\/+$/, "");
     const apiKey = credentials.apiKey as string;
 

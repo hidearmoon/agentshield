@@ -1,11 +1,11 @@
 {
-  "id": "agentshield",
-  "name": "AgentShield Security Guard",
+  "id": "agentguard",
+  "name": "AgentGuard Security Guard",
   "version": "0.1.0",
   "description": "Runtime security layer — inspects every tool call for intent consistency, trust violations, and injection attacks before execution.",
-  "author": "AgentShield Contributors",
+  "author": "AgentGuard Contributors",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/hidearmoon/agentshield",
+  "homepage": "https://github.com/hidearmoon/agentguard",
   "entry": "dist/index.js",
   "capabilities": ["hooks"],
   "config": {
@@ -14,11 +14,11 @@
       "coreUrl": {
         "type": "string",
         "default": "http://localhost:8000",
-        "description": "URL of the AgentShield core engine"
+        "description": "URL of the AgentGuard core engine"
       },
       "apiKey": {
         "type": "string",
-        "description": "AgentShield API key"
+        "description": "AgentGuard API key"
       },
       "agentId": {
         "type": "string",
@@ -37,11 +37,11 @@
           "web": "EXTERNAL",
           "system": "TRUSTED"
         },
-        "description": "Map OpenClaw channel sources to AgentShield trust levels"
+        "description": "Map OpenClaw channel sources to AgentGuard trust levels"
       },
       "blockMessage": {
         "type": "string",
-        "default": "This action was blocked by AgentShield security policy.",
+        "default": "This action was blocked by AgentGuard security policy.",
         "description": "Message shown to the user when a tool call is blocked"
       },
       "confirmTimeout": {

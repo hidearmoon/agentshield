@@ -9,64 +9,12 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "agentguard",
     "agentguard-console",
     "agentguard-core",
     "agentguard-monorepo",
     "agentguard-proxy",
+    "agentguardx",
 ]
-
-[[package]]
-name = "agentguard"
-version = "0.1.0"
-source = { editable = "packages/sdk-python" }
-dependencies = [
-    { name = "httpx" },
-    { name = "pyyaml" },
-]
-
-[package.optional-dependencies]
-all = [
-    { name = "claude-agent-sdk" },
-    { name = "crewai" },
-    { name = "langchain-core" },
-    { name = "pyautogen" },
-]
-autogen = [
-    { name = "pyautogen" },
-]
-claude = [
-    { name = "claude-agent-sdk" },
-]
-crewai = [
-    { name = "crewai" },
-]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "respx" },
-]
-langchain = [
-    { name = "langchain-core" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "claude-agent-sdk", marker = "extra == 'all'", specifier = ">=0.1" },
-    { name = "claude-agent-sdk", marker = "extra == 'claude'", specifier = ">=0.1" },
-    { name = "crewai", marker = "extra == 'all'", specifier = ">=0.30" },
-    { name = "crewai", marker = "extra == 'crewai'", specifier = ">=0.30" },
-    { name = "httpx", specifier = ">=0.25,<1" },
-    { name = "langchain-core", marker = "extra == 'all'", specifier = ">=0.1" },
-    { name = "langchain-core", marker = "extra == 'langchain'", specifier = ">=0.1" },
-    { name = "pyautogen", marker = "extra == 'all'", specifier = ">=0.2" },
-    { name = "pyautogen", marker = "extra == 'autogen'", specifier = ">=0.2" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
-    { name = "pyyaml", specifier = ">=6,<7" },
-    { name = "respx", marker = "extra == 'dev'", specifier = ">=0.21" },
-]
-provides-extras = ["langchain", "crewai", "autogen", "claude", "all", "dev"]
 
 [[package]]
 name = "agentguard-console"
@@ -193,6 +141,58 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.32,<1" },
 ]
 provides-extras = ["dev"]
+
+[[package]]
+name = "agentguardx"
+version = "0.1.0"
+source = { editable = "packages/sdk-python" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pyyaml" },
+]
+
+[package.optional-dependencies]
+all = [
+    { name = "claude-agent-sdk" },
+    { name = "crewai" },
+    { name = "langchain-core" },
+    { name = "pyautogen" },
+]
+autogen = [
+    { name = "pyautogen" },
+]
+claude = [
+    { name = "claude-agent-sdk" },
+]
+crewai = [
+    { name = "crewai" },
+]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "respx" },
+]
+langchain = [
+    { name = "langchain-core" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "claude-agent-sdk", marker = "extra == 'all'", specifier = ">=0.1" },
+    { name = "claude-agent-sdk", marker = "extra == 'claude'", specifier = ">=0.1" },
+    { name = "crewai", marker = "extra == 'all'", specifier = ">=0.30" },
+    { name = "crewai", marker = "extra == 'crewai'", specifier = ">=0.30" },
+    { name = "httpx", specifier = ">=0.25,<1" },
+    { name = "langchain-core", marker = "extra == 'all'", specifier = ">=0.1" },
+    { name = "langchain-core", marker = "extra == 'langchain'", specifier = ">=0.1" },
+    { name = "pyautogen", marker = "extra == 'all'", specifier = ">=0.2" },
+    { name = "pyautogen", marker = "extra == 'autogen'", specifier = ">=0.2" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
+    { name = "pyyaml", specifier = ">=6,<7" },
+    { name = "respx", marker = "extra == 'dev'", specifier = ">=0.21" },
+]
+provides-extras = ["langchain", "crewai", "autogen", "claude", "all", "dev"]
 
 [[package]]
 name = "aiofiles"
