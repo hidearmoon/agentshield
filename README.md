@@ -86,7 +86,7 @@ from agentshield.integrations import LangChainShield, CrewAIShield, AutoGenShiel
 ### 30-Second Local Mode (no server needed)
 
 ```bash
-pip install agentshield
+pip install agentshield-runtime
 ```
 
 ```python

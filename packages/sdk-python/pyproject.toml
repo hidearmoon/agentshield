@@ -3,16 +3,50 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentshield"
+name = "agentshield-runtime"
 version = "0.1.0"
-description = "AgentShield SDK — lightweight security guardrails for AI agents"
+description = "Runtime security guardrails for AI agents — inspect, control, and audit every tool call. Zero-dependency local mode included."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
+keywords = [
+    "ai-security",
+    "ai-agent",
+    "prompt-injection",
+    "guardrails",
+    "llm-security",
+    "agent-safety",
+    "tool-use",
+    "mcp",
+    "langchain",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+authors = [
+    { name = "hidearmoon" },
+]
+
 dependencies = [
     "httpx>=0.25,<1",
     "pyyaml>=6,<7",
 ]
+
+[project.urls]
+Homepage = "https://github.com/hidearmoon/agentshield"
+Repository = "https://github.com/hidearmoon/agentshield"
+Issues = "https://github.com/hidearmoon/agentshield/issues"
+Documentation = "https://github.com/hidearmoon/agentshield#quick-start"
 
 [project.optional-dependencies]
 langchain = ["langchain-core>=0.1"]
