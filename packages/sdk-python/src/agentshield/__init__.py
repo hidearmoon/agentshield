@@ -1,6 +1,7 @@
 """AgentShield Python SDK — lightweight security guardrails for AI agents."""
 
 from agentshield.shield import Shield
+from agentshield.local import LocalShield
 from agentshield.session import ShieldSession
 from agentshield.exceptions import (
     AgentShieldError,
@@ -13,6 +14,7 @@ from agentshield.models import CheckResult, Decision
 
 __all__ = [
     "Shield",
+    "LocalShield",
     "ShieldSession",
     "AgentShieldError",
     "ConfigError",
