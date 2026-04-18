@@ -7,16 +7,16 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.engine.trace.merkle import MerkleChain
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.engine.trace.merkle import MerkleChain
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):
@@ -52,7 +52,7 @@ class TestTOCTOUAttacks:
     """
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_trust_doesnt_persist_across_sources(self, mock_insert, pipeline):
         """Using VERIFIED source first, then switching to EXTERNAL, trust should drop."""
         session_id, _ = await pipeline.create_session("Process data", agent_id="test")
@@ -78,7 +78,7 @@ class TestTOCTOUAttacks:
         assert r2.action == "BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_buildup_then_attack_pattern(self, mock_insert, pipeline):
         """Attacker does safe operations to look benign, then attacks."""
         session_id, _ = await pipeline.create_session("Help with emails", agent_id="test")
@@ -106,7 +106,7 @@ class TestSessionAbuse:
     """Session fixation, hijacking, and cross-session attacks."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_sessions_are_fully_independent(self, mock_insert, pipeline):
         """One session's state should never leak into another."""
         s1, _ = await pipeline.create_session("Task A", agent_id="agent-1")
@@ -121,7 +121,7 @@ class TestSessionAbuse:
         assert len(ctx2.tool_call_history) == 0
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_auto_created_session_still_protected(self, mock_insert, pipeline):
         """Even auto-created sessions (no explicit create_session) should enforce security."""
         r = await pipeline.check_tool_call(
@@ -137,7 +137,7 @@ class TestTrustManipulation:
     """Attempts to manipulate trust levels through various vectors."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_client_trust_claim_always_ignored_for_upgrade(self, mock_insert, pipeline):
         """Client claiming higher trust than source allows should be ignored."""
         s, _ = await pipeline.create_session("test")
@@ -153,7 +153,7 @@ class TestTrustManipulation:
             assert r.action == "BLOCK", f"Should block even when client claims {claimed}"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_source_id_manipulation(self, mock_insert, pipeline):
         """Attacker tries source_ids that look like trusted sources."""
         s, _ = await pipeline.create_session("test")
@@ -180,7 +180,7 @@ class TestMerkleChainAttacks:
     """Verify Merkle chain resists various tampering attacks."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_trace_integrity_after_mixed_decisions(self, mock_insert, pipeline):
         """Trace with mixed ALLOW/BLOCK decisions should have valid chain."""
         s, trace_id = await pipeline.create_session("test", agent_id="a1")
@@ -201,7 +201,7 @@ class TestMerkleChainAttacks:
         assert decisions[2] == "ALLOW"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_changing_blocked_to_allowed_breaks_chain(self, mock_insert, pipeline):
         """If an auditor changes a BLOCK span to ALLOW, the chain should break."""
         s, trace_id = await pipeline.create_session("test")

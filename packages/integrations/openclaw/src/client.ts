@@ -1,9 +1,9 @@
 /**
- * Lightweight HTTP client for AgentShield Core Engine.
+ * Lightweight HTTP client for AgentGuard Core Engine.
  * Designed for the OpenClaw plugin runtime (Node.js, in-process).
  */
 
-export interface AgentShieldConfig {
+export interface AgentGuardConfig {
   baseUrl: string;
   apiKey: string;
   timeout: number;
@@ -25,20 +25,20 @@ export interface SessionInfo {
   trace_id: string;
 }
 
-export class AgentShieldClient {
+export class AgentGuardClient {
   private readonly baseUrl: string;
   private readonly headers: Record<string, string>;
   private readonly timeout: number;
   private readonly maxRetries: number;
 
-  constructor(config: AgentShieldConfig) {
+  constructor(config: AgentGuardConfig) {
     this.baseUrl = config.baseUrl.replace(/\/+$/, "");
     this.timeout = config.timeout;
     this.maxRetries = config.maxRetries;
     this.headers = {
       Authorization: `Bearer ${config.apiKey}`,
       "Content-Type": "application/json",
-      "User-Agent": "agentshield-openclaw/0.1.0",
+      "User-Agent": "agentguard-openclaw/0.1.0",
     };
   }
 
@@ -59,7 +59,7 @@ export class AgentShieldClient {
 
         if (!response.ok) {
           const text = await response.text();
-          throw new Error(`AgentShield HTTP ${response.status}: ${text}`);
+          throw new Error(`AgentGuard HTTP ${response.status}: ${text}`);
         }
 
         return (await response.json()) as T;

@@ -1,8 +1,8 @@
 """Security tests: Trust level escalation attempts."""
 
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.trust.marker import TrustMarker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.trust.marker import TrustMarker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
 
 
 class TestTrustEscalation:

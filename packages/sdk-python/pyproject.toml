@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agentshield-runtime"
+name = "agentguardx"
 version = "0.1.0"
 description = "Runtime security guardrails for AI agents — inspect, control, and audit every tool call. Zero-dependency local mode included."
 readme = "README.md"
@@ -43,10 +43,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hidearmoon/agentshield"
-Repository = "https://github.com/hidearmoon/agentshield"
-Issues = "https://github.com/hidearmoon/agentshield/issues"
-Documentation = "https://github.com/hidearmoon/agentshield#quick-start"
+Homepage = "https://github.com/hidearmoon/agentguard"
+Repository = "https://github.com/hidearmoon/agentguard"
+Issues = "https://github.com/hidearmoon/agentguard/issues"
+Documentation = "https://github.com/hidearmoon/agentguard#quick-start"
 
 [project.optional-dependencies]
 langchain = ["langchain-core>=0.1"]
@@ -66,4 +66,4 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/agentshield"]
+packages = ["src/agentguard"]

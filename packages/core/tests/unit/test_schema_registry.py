@@ -1,7 +1,7 @@
 """Tests for Schema Registry."""
 
 import pytest
-from agentshield_core.schemas.registry import SchemaRegistry
+from agentguard_core.schemas.registry import SchemaRegistry
 
 
 class TestSchemaRegistry:

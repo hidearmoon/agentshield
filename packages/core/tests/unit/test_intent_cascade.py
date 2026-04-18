@@ -13,16 +13,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector, AnomalyResult
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.intent.models import (
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector, AnomalyResult
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.intent.models import (
     ToolCall,
     Decision,
     DecisionAction,
 )
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):

@@ -8,12 +8,12 @@ from unittest.mock import AsyncMock, patch
 import pytest
 import httpx
 
-from agentshield import Shield, ToolCallBlocked, Decision
+from agentguard import Shield, ToolCallBlocked, Decision
 
 
 @pytest.fixture(autouse=True)
 def set_api_key():
-    with patch.dict(os.environ, {"AGENTSHIELD_API_KEY": "test-key"}):
+    with patch.dict(os.environ, {"AGENTGUARD_API_KEY": "test-key"}):
         yield
 
 

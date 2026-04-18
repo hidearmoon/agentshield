@@ -23,10 +23,10 @@ test-security:
 	cd packages/core && uv run pytest tests/security -v
 
 test-coverage:
-	cd packages/core && uv run pytest tests/ --cov=agentshield_core --cov-report=term --cov-report=html:htmlcov --cov-fail-under=90 -q
+	cd packages/core && uv run pytest tests/ --cov=agentguard_core --cov-report=term --cov-report=html:htmlcov --cov-fail-under=90 -q
 
 test-coverage-full:
-	cd packages/core && AGENTSHIELD_CLICKHOUSE_PORT=8125 AGENTSHIELD_DATABASE_URL="postgresql+asyncpg://agentshield:test-password@localhost:5433/agentshield_test" uv run pytest tests/ --cov=agentshield_core --cov-report=term --cov-report=html:htmlcov --cov-fail-under=95 -q
+	cd packages/core && AGENTGUARD_CLICKHOUSE_PORT=8125 AGENTGUARD_DATABASE_URL="postgresql+asyncpg://agentguard:test-password@localhost:5433/agentguard_test" uv run pytest tests/ --cov=agentguard_core --cov-report=term --cov-report=html:htmlcov --cov-fail-under=95 -q
 
 test-perf:
 	cd packages/core && uv run pytest tests/performance -v
@@ -48,9 +48,9 @@ build:
 	cd packages/console/frontend && npm run build
 
 docker-build:
-	docker build -f docker/Dockerfile.core -t agentshield/core:latest .
-	docker build -f docker/Dockerfile.proxy -t agentshield/proxy:latest .
-	docker build -f docker/Dockerfile.console -t agentshield/console:latest .
+	docker build -f docker/Dockerfile.core -t agentguard/core:latest .
+	docker build -f docker/Dockerfile.proxy -t agentguard/proxy:latest .
+	docker build -f docker/Dockerfile.console -t agentguard/console:latest .
 
 # Database
 migrate:

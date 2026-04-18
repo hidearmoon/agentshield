@@ -1,7 +1,7 @@
 """Tests for TrustMarker — server-side trust level computation."""
 
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.trust.marker import TrustMarker
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.trust.marker import TrustMarker
 
 
 class TestTrustMarker:

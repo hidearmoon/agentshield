@@ -7,15 +7,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):
@@ -45,7 +45,7 @@ def pipeline():
 
 class TestResilience:
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_clickhouse_failure_doesnt_crash(self, mock_insert, pipeline):
         """If ClickHouse insert fails, the check should still return a result."""
         mock_insert.side_effect = RuntimeError("ClickHouse down")
@@ -64,7 +64,7 @@ class TestResilience:
             pass
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_many_sessions_with_cleanup(self, mock_insert, pipeline):
         """Create many sessions and verify cleanup works."""
         for i in range(200):
@@ -74,7 +74,7 @@ class TestResilience:
         assert pipeline.metrics["active_sessions"] == 200
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_pipeline_metrics_after_mixed_workload(self, mock_insert, pipeline):
         """Metrics should accurately reflect a mixed workload."""
         sid, _ = await pipeline.create_session("test")
@@ -92,7 +92,7 @@ class TestResilience:
         assert m["avg_check_ms"] > 0
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_special_characters_in_tool_params(self, mock_insert, pipeline):
         """Special characters in params should not cause issues."""
         sid, _ = await pipeline.create_session("test")
@@ -110,7 +110,7 @@ class TestResilience:
         assert result.action in ("ALLOW", "BLOCK", "REQUIRE_CONFIRMATION")
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_empty_and_none_params(self, mock_insert, pipeline):
         """Empty and None-like params should be handled."""
         sid, _ = await pipeline.create_session("test")

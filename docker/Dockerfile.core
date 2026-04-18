@@ -18,4 +18,4 @@ COPY configs configs
 
 EXPOSE 8000
 
-CMD ["uv", "run", "--directory", "packages/core", "uvicorn", "agentshield_core.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "--directory", "packages/core", "uvicorn", "agentguard_core.app:app", "--host", "0.0.0.0", "--port", "8000"]

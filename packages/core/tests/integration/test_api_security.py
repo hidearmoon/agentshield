@@ -8,18 +8,18 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
-from agentshield_core.app import create_app
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
-from agentshield_core.engine.sanitization.pipeline import DataSanitizationPipeline
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.app import create_app
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.sanitization.pipeline import DataSanitizationPipeline
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):
@@ -52,17 +52,17 @@ def client():
         trust_marker=trust_marker,
     )
 
-    from agentshield_core.dependencies import get_pipeline, get_sanitization_pipeline
+    from agentguard_core.dependencies import get_pipeline, get_sanitization_pipeline
 
     app.dependency_overrides[get_pipeline] = lambda: pipeline
     app.dependency_overrides[get_sanitization_pipeline] = lambda: sanitization
 
     with (
-        patch("agentshield_core.app.init_db", new_callable=AsyncMock),
-        patch("agentshield_core.app.close_db", new_callable=AsyncMock),
-        patch("agentshield_core.app.init_clickhouse", new_callable=AsyncMock),
-        patch("agentshield_core.app.close_clickhouse", new_callable=AsyncMock),
-        patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock),
+        patch("agentguard_core.app.init_db", new_callable=AsyncMock),
+        patch("agentguard_core.app.close_db", new_callable=AsyncMock),
+        patch("agentguard_core.app.init_clickhouse", new_callable=AsyncMock),
+        patch("agentguard_core.app.close_clickhouse", new_callable=AsyncMock),
+        patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock),
     ):
         with TestClient(app) as c:
             yield c

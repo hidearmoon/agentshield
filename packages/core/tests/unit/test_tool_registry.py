@@ -4,11 +4,11 @@ import json
 
 import pytest
 
-from agentshield_core.engine.tool_registry.verifier import (
+from agentguard_core.engine.tool_registry.verifier import (
     ToolRegistryVerifier,
     VerificationMode,
 )
-from agentshield_core.policy.signer import PolicySigner
+from agentguard_core.policy.signer import PolicySigner
 
 
 @pytest.fixture

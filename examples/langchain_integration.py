@@ -1,20 +1,20 @@
 """LangChain Integration Example.
 
-Demonstrates how to wrap a LangChain agent with AgentShield
+Demonstrates how to wrap a LangChain agent with AgentGuard
 so every tool call is security-checked before execution.
 
 Prerequisites:
-    pip install langchain langchain-openai agentshield
+    pip install langchain langchain-openai agentguard
 
 Usage:
-    export AGENTSHIELD_API_KEY=your-key
+    export AGENTGUARD_API_KEY=your-key
     export OPENAI_API_KEY=your-key
     python examples/langchain_integration.py
 """
 
 import asyncio
 
-from agentshield import Shield, ServerError
+from agentguard import Shield, ServerError
 
 
 async def main():
@@ -37,7 +37,7 @@ async def main():
         return f"Email sent to {to}"
 
     try:
-        # This would work if AgentShield server is running
+        # This would work if AgentGuard server is running
         result = await search_web(query="weather today")
         print(f"Search: {result}")
     except ServerError:
@@ -47,12 +47,12 @@ async def main():
     print("\n=== Pattern 2: LangChain Wrapper ===")
     print("""
     from langchain.agents import AgentExecutor
-    from agentshield.integrations import LangChainShield
+    from agentguard.integrations import LangChainShield
 
     shield = Shield()
     agent = AgentExecutor(agent=..., tools=[search, email])
 
-    # Wrap the agent — all tool calls now go through AgentShield
+    # Wrap the agent — all tool calls now go through AgentGuard
     guarded_agent = LangChainShield(shield).wrap(agent)
 
     # Use normally — security is transparent

@@ -1,5 +1,5 @@
 """
-AgentShield MCP Guard — two integration patterns for MCP servers.
+AgentGuard MCP Guard — two integration patterns for MCP servers.
 
 Pattern 1: Decorator (@shield.guard)
     Wrap individual MCP tool handlers. Minimal code change.
@@ -10,7 +10,7 @@ Pattern 2: Proxy server (MCPShieldProxy)
 Usage (decorator pattern):
 
     from mcp.server import Server
-    from agentshield_mcp import MCPShield
+    from agentguard_mcp import MCPShield
 
     app = Server("my-server")
     shield = MCPShield(api_key="your-key")
@@ -22,11 +22,11 @@ Usage (decorator pattern):
 
 Usage (proxy pattern):
 
-    from agentshield_mcp import MCPShieldProxy
+    from agentguard_mcp import MCPShieldProxy
 
     proxy = MCPShieldProxy(
         upstream_command=["python", "-m", "my_mcp_server"],
-        agentshield_url="http://localhost:8000",
+        agentguard_url="http://localhost:8000",
         api_key="your-key",
     )
     proxy.run()
@@ -52,7 +52,7 @@ class MCPShield:
     """Decorator-based guard for MCP tool handlers.
 
     Wraps any MCP tool function so that every call is checked against
-    the AgentShield core engine before execution.
+    the AgentGuard core engine before execution.
     """
 
     def __init__(
@@ -75,7 +75,7 @@ class MCPShield:
             headers={
                 "Authorization": f"Bearer {self._api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "agentshield-mcp/0.1.0",
+                "User-Agent": "agentguard-mcp/0.1.0",
             },
             timeout=self._timeout,
         )
@@ -94,11 +94,11 @@ class MCPShield:
             self._session_id = resp.json()["session_id"]
         except Exception:
             self._session_id = str(uuid.uuid4())
-            logger.warning("AgentShield session creation failed, using local ID")
+            logger.warning("AgentGuard session creation failed, using local ID")
         return self._session_id
 
     async def check(self, tool_name: str, params: dict[str, Any]) -> dict[str, Any]:
-        """Check a tool call against the AgentShield policy engine."""
+        """Check a tool call against the AgentGuard policy engine."""
         session_id = await self._ensure_session()
         try:
             resp = await self._client.post("/api/v1/check", json={
@@ -111,7 +111,7 @@ class MCPShield:
             return resp.json()
         except Exception as e:
             if self._fail_open:
-                logger.warning("AgentShield check failed (%s), allowing tool call", e)
+                logger.warning("AgentGuard check failed (%s), allowing tool call", e)
                 return {"action": "ALLOW", "reason": "fail-open", "trace_id": ""}
             raise
 
@@ -160,7 +160,7 @@ class MCPShield:
 
 
 class ToolCallBlocked(Exception):
-    """Raised when AgentShield blocks a tool call."""
+    """Raised when AgentGuard blocks a tool call."""
 
     def __init__(self, tool: str, reason: str, trace_id: str) -> None:
         self.tool = tool
@@ -182,7 +182,7 @@ class MCPShieldProxy:
 
         proxy = MCPShieldProxy(
             upstream_command=["python", "-m", "my_mcp_server"],
-            agentshield_url="http://localhost:8000",
+            agentguard_url="http://localhost:8000",
             api_key="your-key",
         )
         asyncio.run(proxy.run_stdio())
@@ -192,7 +192,7 @@ class MCPShieldProxy:
         self,
         *,
         upstream_command: list[str],
-        agentshield_url: str = "http://localhost:8000",
+        agentguard_url: str = "http://localhost:8000",
         api_key: str = "",
         agent_id: str = "mcp-proxy",
         fail_open: bool = True,
@@ -200,7 +200,7 @@ class MCPShieldProxy:
         self._upstream_cmd = upstream_command
         self._shield = MCPShield(
             api_key=api_key,
-            base_url=agentshield_url,
+            base_url=agentguard_url,
             agent_id=agent_id,
             fail_open=fail_open,
         )
@@ -251,7 +251,7 @@ class MCPShieldProxy:
                             "id": msg.get("id"),
                             "error": {
                                 "code": -32001,
-                                "message": f"Blocked by AgentShield: {result.get('reason', '')}",
+                                "message": f"Blocked by AgentGuard: {result.get('reason', '')}",
                             },
                         }
                         __import__("sys").stdout.buffer.write(

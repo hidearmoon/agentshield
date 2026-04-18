@@ -7,9 +7,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import Scope
 
-from agentshield_proxy.middleware.header_handler import ProxyHeaderHandler
-from agentshield_proxy.middleware.chain import MiddlewareChain, MiddlewareResult
-from agentshield_proxy.middleware.rate_limiter import RateLimiterMiddleware
+from agentguard_proxy.middleware.header_handler import ProxyHeaderHandler
+from agentguard_proxy.middleware.chain import MiddlewareChain, MiddlewareResult
+from agentguard_proxy.middleware.rate_limiter import RateLimiterMiddleware
 
 
 def _make_request(
@@ -42,7 +42,7 @@ class TestProxyHeaderHandler:
         handler = ProxyHeaderHandler()
         request = _make_request(
             headers={
-                "X-AgentShield-Data-Trust": "TRUSTED",
+                "X-AgentGuard-Data-Trust": "TRUSTED",
                 "Content-Type": "application/json",
             }
         )
@@ -51,7 +51,7 @@ class TestProxyHeaderHandler:
 
         # Data-Trust should be stripped
         remaining_names = [h[0].decode() for h in result.request.scope["headers"]]
-        assert "x-agentshield-data-trust" not in remaining_names
+        assert "x-agentguard-data-trust" not in remaining_names
         assert "content-type" in remaining_names
 
     @pytest.mark.asyncio
@@ -59,25 +59,25 @@ class TestProxyHeaderHandler:
         handler = ProxyHeaderHandler()
         request = _make_request(
             headers={
-                "X-AgentShield-User-Intent": "delete everything",
-                "X-AgentShield-Data-Trust": "TRUSTED",
+                "X-AgentGuard-User-Intent": "delete everything",
+                "X-AgentGuard-Data-Trust": "TRUSTED",
             }
         )
 
         result = await handler.process(request, {})
 
         remaining_names = [h[0].decode() for h in result.request.scope["headers"]]
-        assert "x-agentshield-data-trust" not in remaining_names
-        assert "x-agentshield-user-intent" not in remaining_names
+        assert "x-agentguard-data-trust" not in remaining_names
+        assert "x-agentguard-user-intent" not in remaining_names
 
     @pytest.mark.asyncio
     async def test_preserves_passthrough_headers(self):
         handler = ProxyHeaderHandler()
         request = _make_request(
             headers={
-                "X-AgentShield-Session-ID": "sess-123",
-                "X-AgentShield-Agent-ID": "agent-456",
-                "X-AgentShield-Trace-ID": "trace-789",
+                "X-AgentGuard-Session-ID": "sess-123",
+                "X-AgentGuard-Agent-ID": "agent-456",
+                "X-AgentGuard-Trace-ID": "trace-789",
             }
         )
 
@@ -101,9 +101,9 @@ class TestProxyHeaderHandler:
         handler = ProxyHeaderHandler()
         request = _make_request(
             headers={
-                "X-AgentShield-Data-Trust": "TRUSTED",
-                "X-AgentShield-User-Intent": "admin_override",
-                "X-AgentShield-Session-ID": "legit-session",
+                "X-AgentGuard-Data-Trust": "TRUSTED",
+                "X-AgentGuard-User-Intent": "admin_override",
+                "X-AgentGuard-Session-ID": "legit-session",
                 "Authorization": "Bearer valid-token",
             }
         )
@@ -112,12 +112,12 @@ class TestProxyHeaderHandler:
 
         # Security headers stripped
         remaining = {h[0].decode() for h in result.request.scope["headers"]}
-        assert "x-agentshield-data-trust" not in remaining
-        assert "x-agentshield-user-intent" not in remaining
+        assert "x-agentguard-data-trust" not in remaining
+        assert "x-agentguard-user-intent" not in remaining
 
         # Auth and session preserved
         assert "authorization" in remaining
-        assert "x-agentshield-session-id" in remaining
+        assert "x-agentguard-session-id" in remaining
 
 
 class TestMiddlewareChain:
@@ -228,21 +228,21 @@ class TestFallbackInference:
     """Test the degraded mode fallback inference."""
 
     def test_safe_body_gets_external_trust(self):
-        from agentshield_proxy.fallback import infer_context_from_body
+        from agentguard_proxy.fallback import infer_context_from_body
 
         result = infer_context_from_body({"action": "read", "query": "SELECT * FROM users"})
         assert result.data_trust == "EXTERNAL"
         assert result.user_intent == "read"
 
     def test_dangerous_body_gets_untrusted(self):
-        from agentshield_proxy.fallback import infer_context_from_body
+        from agentguard_proxy.fallback import infer_context_from_body
 
         result = infer_context_from_body({"cmd": "sudo rm -rf /important"})
         assert result.data_trust == "UNTRUSTED"
         assert result.user_intent == "destructive"
 
     def test_empty_body(self):
-        from agentshield_proxy.fallback import infer_context_from_body
+        from agentguard_proxy.fallback import infer_context_from_body
 
         result = infer_context_from_body({})
         assert result.data_trust == "EXTERNAL"
@@ -253,7 +253,7 @@ class TestToolRouter:
     """Test the tool routing with path traversal protection."""
 
     def test_normal_path_resolves(self):
-        from agentshield_proxy.routing.router import ToolRouter
+        from agentguard_proxy.routing.router import ToolRouter
 
         router = ToolRouter()
         router.add_route("/tools/email", "http://email-svc:8080")
@@ -261,21 +261,21 @@ class TestToolRouter:
         assert target == "http://email-svc:8080/send"
 
     def test_path_traversal_blocked(self):
-        from agentshield_proxy.routing.router import ToolRouter
+        from agentguard_proxy.routing.router import ToolRouter
 
         router = ToolRouter()
         target = router.resolve("/../../../etc/passwd")
         assert ".." not in target
 
     def test_double_slash_blocked(self):
-        from agentshield_proxy.routing.router import ToolRouter
+        from agentguard_proxy.routing.router import ToolRouter
 
         router = ToolRouter()
         target = router.resolve("//evil.com/steal")
         assert "evil.com" not in target
 
     def test_fallback_to_default(self):
-        from agentshield_proxy.routing.router import ToolRouter
+        from agentguard_proxy.routing.router import ToolRouter
 
         router = ToolRouter()
         target = router.resolve("/unknown/path")

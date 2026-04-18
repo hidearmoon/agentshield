@@ -1,9 +1,9 @@
 import type { ICredentialType, INodeProperties } from "n8n-workflow";
 
-export class AgentShieldApi implements ICredentialType {
+export class AgentGuardApi implements ICredentialType {
   name = "agentShieldApi";
-  displayName = "AgentShield API";
-  documentationUrl = "https://github.com/hidearmoon/agentshield";
+  displayName = "AgentGuard API";
+  documentationUrl = "https://github.com/hidearmoon/agentguard";
 
   properties: INodeProperties[] = [
     {

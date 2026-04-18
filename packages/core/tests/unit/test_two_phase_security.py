@@ -9,9 +9,9 @@ from __future__ import annotations
 import json
 
 
-from agentshield_core.engine.two_phase import TwoPhaseEngine
-from agentshield_core.schemas.registry import SchemaRegistry
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.two_phase import TwoPhaseEngine
+from agentguard_core.schemas.registry import SchemaRegistry
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class TestTwoPhaseSecurityInvariants:

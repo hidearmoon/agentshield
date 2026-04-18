@@ -1,14 +1,14 @@
-"""AgentShield Quick Start Example.
+"""AgentGuard Quick Start Example.
 
-This example demonstrates the basic usage of AgentShield SDK
+This example demonstrates the basic usage of AgentGuard SDK
 to protect an AI agent's tool calls.
 
 Prerequisites:
-    1. Start the AgentShield server:
-       cd packages/core && uv run uvicorn agentshield_core.app:app --reload
+    1. Start the AgentGuard server:
+       cd packages/core && uv run uvicorn agentguard_core.app:app --reload
 
     2. Set your API key:
-       export AGENTSHIELD_API_KEY=your-api-key
+       export AGENTGUARD_API_KEY=your-api-key
 
     3. Run this example:
        python examples/quickstart.py
@@ -16,7 +16,7 @@ Prerequisites:
 
 import asyncio
 
-from agentshield import Shield, ToolCallBlocked, ConfirmationRejected, ServerError
+from agentguard import Shield, ToolCallBlocked, ConfirmationRejected, ServerError
 
 
 # --- Your existing tool functions ---
@@ -40,7 +40,7 @@ async def execute_code(code: str) -> str:
     return "executed"
 
 
-# --- Protect tools with AgentShield ---
+# --- Protect tools with AgentGuard ---
 
 
 async def main():
@@ -88,7 +88,7 @@ async def main():
 
     except ServerError as e:
         print(f"Server error: {e}")
-        print("Make sure the AgentShield server is running!")
+        print("Make sure the AgentGuard server is running!")
 
     await shield.close()
 

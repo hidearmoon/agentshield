@@ -1,4 +1,4 @@
-/** Shield — primary entry point for the AgentShield TypeScript SDK. */
+/** Shield — primary entry point for the AgentGuard TypeScript SDK. */
 
 import {
   ConfigError,
@@ -37,7 +37,7 @@ export interface ShieldOptions {
  * forwards it to the core engine, and enforces the returned decision.
  *
  * ```ts
- * const shield = new Shield(); // reads AGENTSHIELD_API_KEY from env
+ * const shield = new Shield(); // reads AGENTGUARD_API_KEY from env
  *
  * const guardedFn = shield.guard("send_email", sendEmail);
  * await guardedFn({ to: "a@b.com", body: "hi" });
@@ -50,20 +50,20 @@ export class Shield {
 
   constructor(opts: ShieldOptions = {}) {
     const apiKey =
-      opts.apiKey ?? process.env.AGENTSHIELD_API_KEY ?? "";
+      opts.apiKey ?? process.env.AGENTGUARD_API_KEY ?? "";
     if (!apiKey) {
       throw new ConfigError(
-        "API key is required. Set the AGENTSHIELD_API_KEY environment variable " +
+        "API key is required. Set the AGENTGUARD_API_KEY environment variable " +
           "or pass apiKey to the Shield constructor.",
       );
     }
 
     this.config = {
       apiKey,
-      baseUrl: opts.baseUrl ?? process.env.AGENTSHIELD_BASE_URL ?? DEFAULT_BASE_URL,
+      baseUrl: opts.baseUrl ?? process.env.AGENTGUARD_BASE_URL ?? DEFAULT_BASE_URL,
       timeout: opts.timeout ?? DEFAULT_TIMEOUT,
       maxRetries: opts.maxRetries ?? DEFAULT_MAX_RETRIES,
-      agentId: opts.agentId ?? process.env.AGENTSHIELD_AGENT_ID ?? "",
+      agentId: opts.agentId ?? process.env.AGENTGUARD_AGENT_ID ?? "",
       confirmCallback: opts.confirmCallback,
     };
 

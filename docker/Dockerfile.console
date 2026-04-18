@@ -13,4 +13,4 @@ COPY packages/console/backend/src packages/console/backend/src
 
 EXPOSE 8100
 
-CMD ["uv", "run", "--directory", "packages/console/backend", "uvicorn", "agentshield_console.app:app", "--host", "0.0.0.0", "--port", "8100"]
+CMD ["uv", "run", "--directory", "packages/console/backend", "uvicorn", "agentguard_console.app:app", "--host", "0.0.0.0", "--port", "8100"]

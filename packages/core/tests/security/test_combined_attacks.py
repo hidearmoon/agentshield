@@ -11,17 +11,17 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
-from agentshield_core.engine.sanitization.pipeline import DataSanitizationPipeline
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.sanitization.pipeline import DataSanitizationPipeline
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):
@@ -116,7 +116,7 @@ class TestCombinedAttacks:
         assert "\u200b" not in result.content
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_sanitize_then_check_blocks_attack(self, mock_insert, sanitizer, pipeline):
         """Full pipeline: sanitize external data, then check the resulting action."""
         # Step 1: Attacker's email with hidden injection
@@ -154,7 +154,7 @@ class TestCombinedAttacks:
         assert "\u200b" not in result.content
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_rapid_fire_attack_escalation(self, mock_insert, pipeline):
         """Attacker makes many safe calls, then rapidly escalates."""
         session_id, _ = await pipeline.create_session("Help with tasks", agent_id="general-agent")

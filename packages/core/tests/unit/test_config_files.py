@@ -6,8 +6,8 @@ from pathlib import Path
 
 import yaml
 
-from agentshield_core.engine.trust.levels import TrustLevel, TRUST_SOURCE_MAPPING
-from agentshield_core.engine.intent.rule_engine import BUILTIN_RULES
+from agentguard_core.engine.trust.levels import TrustLevel, TRUST_SOURCE_MAPPING
+from agentguard_core.engine.intent.rule_engine import BUILTIN_RULES
 
 CONFIGS_DIR = Path(__file__).parents[4] / "configs"
 

@@ -1,4 +1,4 @@
-package agentshield
+package agentguard
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type Session struct {
 func (s *Session) Execute(ctx context.Context, toolName string, params map[string]any, fn func(ctx context.Context, params map[string]any) (any, error)) (any, error) {
 	result, err := s.client.CheckToolCall(ctx, s.SessionID, toolName, params, "", nil)
 	if err != nil {
-		return nil, fmt.Errorf("agentshield: check tool call: %w", err)
+		return nil, fmt.Errorf("agentguard: check tool call: %w", err)
 	}
 
 	switch result.Action {
@@ -37,7 +37,7 @@ func (s *Session) Execute(ctx context.Context, toolName string, params map[strin
 		}
 		confirmed, err := s.confirmFunc(toolName, params)
 		if err != nil {
-			return nil, fmt.Errorf("agentshield: confirm callback: %w", err)
+			return nil, fmt.Errorf("agentguard: confirm callback: %w", err)
 		}
 		if !confirmed {
 			return nil, &ConfirmationRejectedError{Tool: toolName}
@@ -55,7 +55,7 @@ type ToolCallBlockedError struct {
 }
 
 func (e *ToolCallBlockedError) Error() string {
-	return fmt.Sprintf("agentshield: tool call '%s' blocked: %s (trace_id=%s)", e.Tool, e.Reason, e.TraceID)
+	return fmt.Sprintf("agentguard: tool call '%s' blocked: %s (trace_id=%s)", e.Tool, e.Reason, e.TraceID)
 }
 
 // ConfirmationRejectedError is returned when a tool call requiring confirmation is not confirmed.
@@ -64,7 +64,7 @@ type ConfirmationRejectedError struct {
 }
 
 func (e *ConfirmationRejectedError) Error() string {
-	return fmt.Sprintf("agentshield: tool call '%s' requires confirmation and was not confirmed", e.Tool)
+	return fmt.Sprintf("agentguard: tool call '%s' requires confirmation and was not confirmed", e.Tool)
 }
 
 // ConfigError is returned when the SDK configuration is invalid.
@@ -73,5 +73,5 @@ type ConfigError struct {
 }
 
 func (e *ConfigError) Error() string {
-	return fmt.Sprintf("agentshield: config error: %s", e.Message)
+	return fmt.Sprintf("agentguard: config error: %s", e.Message)
 }

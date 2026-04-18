@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: agentshield_test
-      POSTGRES_USER: agentshield
+      POSTGRES_DB: agentguard_test
+      POSTGRES_USER: agentguard
       POSTGRES_PASSWORD: test-password
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agentshield"]
+      test: ["CMD-SHELL", "pg_isready -U agentguard"]
       interval: 2s
       timeout: 5s
       retries: 10

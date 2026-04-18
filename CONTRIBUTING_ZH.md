@@ -1,6 +1,6 @@
-# 为 AgentShield 贡献
+# 为 AgentGuard 贡献
 
-感谢你对 AgentShield 项目的关注。本文档提供贡献指南和说明。
+感谢你对 AgentGuard 项目的关注。本文档提供贡献指南和说明。
 
 ## 行为准则
 
@@ -19,8 +19,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/hidearmoon/agentshield.git
-cd agentshield
+git clone https://github.com/hidearmoon/agentguard.git
+cd agentguard
 
 # 启动依赖服务
 make dev
@@ -121,7 +121,7 @@ docs: 更新信任模型文档
 
 ## 添加内置规则
 
-1. 在 `packages/core/src/agentshield_core/engine/intent/rule_engine.py` 中添加规则逻辑
+1. 在 `packages/core/src/agentguard_core/engine/intent/rule_engine.py` 中添加规则逻辑
 2. 在 `configs/builtin_rules.yaml` 中注册
 3. 在 `packages/core/tests/unit/test_rule_engine.py` 中添加单元测试
 4. 添加安全测试和该规则应捕获的攻击样本
@@ -129,12 +129,12 @@ docs: 更新信任模型文档
 
 ## 添加框架集成
 
-1. 创建 `packages/sdk-python/src/agentshield/integrations/your_framework.py`
-2. 在 `packages/sdk-python/src/agentshield/integrations/__init__.py` 中导出
+1. 创建 `packages/sdk-python/src/agentguard/integrations/your_framework.py`
+2. 在 `packages/sdk-python/src/agentguard/integrations/__init__.py` 中导出
 3. 在 `packages/sdk-python/tests/test_integrations.py` 中添加测试
 4. 在 `examples/` 中添加示例
 5. 更新 SDK README
 
 ## 许可证
 
-向 AgentShield 贡献代码即表示你同意你的贡献将以 Apache License 2.0 许可发布。
+向 AgentGuard 贡献代码即表示你同意你的贡献将以 Apache License 2.0 许可发布。

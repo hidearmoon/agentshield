@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
-from agentshield_core.engine.sanitization.pipeline import DataSanitizationPipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.sanitization.pipeline import DataSanitizationPipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.trust.levels import TrustLevel
 
 
 @pytest.fixture

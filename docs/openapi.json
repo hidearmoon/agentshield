@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "AgentShield Core Engine",
+    "title": "AgentGuard Core Engine",
     "description": "AI Agent Runtime Security Platform. Provides tool call interception, data sanitization, trust-based access control, and intent consistency detection.",
     "version": "1.0.0"
   },

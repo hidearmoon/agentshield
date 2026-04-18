@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from agentshield_core.llm.client import LLMClient, LLMMessage, LLMResponse
+from agentguard_core.llm.client import LLMClient, LLMMessage, LLMResponse
 
 
 class MockLLMClient(LLMClient):

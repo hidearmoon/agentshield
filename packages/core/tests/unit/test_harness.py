@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from agentshield_core.harness import AgentHarness, ToolDef
-from agentshield_core.llm.client import LLMClient, LLMMessage, LLMResponse
+from agentguard_core.harness import AgentHarness, ToolDef
+from agentguard_core.llm.client import LLMClient, LLMMessage, LLMResponse
 
 
 # ─── Mock tools ───

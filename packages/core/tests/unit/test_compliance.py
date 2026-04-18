@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from agentshield_core.compliance.eu_ai_act import (
+from agentguard_core.compliance.eu_ai_act import (
     ComplianceReportGenerator,
     RiskLevel,
     RiskAssessmentRecord,
@@ -107,7 +107,7 @@ class TestRecordCollection:
 class TestReportGeneration:
     def test_full_report_structure(self, populated_generator):
         report = populated_generator.generate_full_report(
-            system_name="AgentShield",
+            system_name="AgentGuard",
             system_version="1.0.0",
             operator_name="Test Corp",
             intended_purpose="AI agent security",

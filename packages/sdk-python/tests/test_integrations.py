@@ -12,12 +12,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 import httpx
 
-from agentshield import Shield, ToolCallBlocked
+from agentguard import Shield, ToolCallBlocked
 
 
 @pytest.fixture(autouse=True)
 def set_api_key():
-    with patch.dict(os.environ, {"AGENTSHIELD_API_KEY": "test-key"}):
+    with patch.dict(os.environ, {"AGENTGUARD_API_KEY": "test-key"}):
         yield
 
 
@@ -53,7 +53,7 @@ class TestLangChainIntegration:
 
         tool = FakeTool()
 
-        from agentshield.integrations.langchain import LangChainShield
+        from agentguard.integrations.langchain import LangChainShield
 
         LangChainShield(shield)._patch_tool(tool)
 
@@ -75,7 +75,7 @@ class TestLangChainIntegration:
         original_arun = AsyncMock(return_value="should not run")
         mock_tool._arun = original_arun
 
-        from agentshield.integrations.langchain import LangChainShield
+        from agentguard.integrations.langchain import LangChainShield
 
         wrapper = LangChainShield(shield)
         wrapper._patch_tool(mock_tool)
@@ -100,9 +100,9 @@ class TestClaudeAgentIntegration:
         async def original_handler(tool_name: str, params: dict) -> str:
             return f"executed {tool_name}"
 
-        from agentshield.integrations.claude_agent import ClaudeAgentShield
+        from agentguard.integrations.claude_agent import ClaudeAgentGuard
 
-        guarded = ClaudeAgentShield(shield).wrap(original_handler)
+        guarded = ClaudeAgentGuard(shield).wrap(original_handler)
 
         with patch.object(
             shield._client._http,
@@ -120,9 +120,9 @@ class TestClaudeAgentIntegration:
         async def original_handler(tool_name: str, params: dict) -> str:
             return "should not run"
 
-        from agentshield.integrations.claude_agent import ClaudeAgentShield
+        from agentguard.integrations.claude_agent import ClaudeAgentGuard
 
-        guarded = ClaudeAgentShield(shield).wrap(original_handler)
+        guarded = ClaudeAgentGuard(shield).wrap(original_handler)
 
         with patch.object(
             shield._client._http,

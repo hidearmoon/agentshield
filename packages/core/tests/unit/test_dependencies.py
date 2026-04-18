@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-from agentshield_core.dependencies import (
+from agentguard_core.dependencies import (
     get_anomaly_detector,
     get_permission_engine,
     get_pipeline,
@@ -18,7 +18,7 @@ class TestDependencyFactories:
     """Test that DI factories return correct types and are cached."""
 
     def test_get_trust_marker(self):
-        from agentshield_core.engine.trust.marker import TrustMarker
+        from agentguard_core.engine.trust.marker import TrustMarker
 
         result = get_trust_marker()
         assert isinstance(result, TrustMarker)
@@ -26,38 +26,38 @@ class TestDependencyFactories:
         assert get_trust_marker() is result
 
     def test_get_rule_engine(self):
-        from agentshield_core.engine.intent.rule_engine import RuleEngine
+        from agentguard_core.engine.intent.rule_engine import RuleEngine
 
         result = get_rule_engine()
         assert isinstance(result, RuleEngine)
 
     def test_get_anomaly_detector(self):
-        from agentshield_core.engine.intent.anomaly import AnomalyDetector
+        from agentguard_core.engine.intent.anomaly import AnomalyDetector
 
         result = get_anomaly_detector()
         assert isinstance(result, AnomalyDetector)
 
     def test_get_permission_engine(self):
-        from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
+        from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
 
         result = get_permission_engine()
         assert isinstance(result, DynamicPermissionEngine)
 
     def test_get_trace_engine(self):
-        from agentshield_core.engine.trace.engine import TraceEngine
+        from agentguard_core.engine.trace.engine import TraceEngine
 
         result = get_trace_engine()
         assert isinstance(result, TraceEngine)
 
     def test_get_schema_registry(self):
-        from agentshield_core.schemas.registry import SchemaRegistry
+        from agentguard_core.schemas.registry import SchemaRegistry
 
         result = get_schema_registry()
         assert isinstance(result, SchemaRegistry)
         assert "email" in result.list_types()
 
     def test_get_pipeline(self):
-        from agentshield_core.engine.pipeline import Pipeline
+        from agentguard_core.engine.pipeline import Pipeline
 
         result = get_pipeline()
         assert isinstance(result, Pipeline)

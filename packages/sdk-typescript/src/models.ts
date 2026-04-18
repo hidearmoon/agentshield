@@ -1,4 +1,4 @@
-/** Data models for AgentShield SDK responses. */
+/** Data models for AgentGuard SDK responses. */
 
 export enum Decision {
   ALLOW = "ALLOW",

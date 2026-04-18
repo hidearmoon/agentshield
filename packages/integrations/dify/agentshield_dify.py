@@ -1,24 +1,24 @@
 """
-AgentShield integration for Dify — intercepts all tool calls at the ToolEngine chokepoint.
+AgentGuard integration for Dify — intercepts all tool calls at the ToolEngine chokepoint.
 
 Dify routes every tool execution (agent mode and workflow mode) through
-ToolEngine._invoke(). This module patches that method to run AgentShield
+ToolEngine._invoke(). This module patches that method to run AgentGuard
 checks before each tool executes.
 
 Setup:
-    1. Start AgentShield core engine
+    1. Start AgentGuard core engine
     2. Import and call install() at Dify startup (e.g., in app.py or a custom extension)
 
-    from agentshield_dify import install
+    from agentguard_dify import install
     install(api_key="your-key", core_url="http://localhost:8000")
 
 How it works:
     - Patches ToolEngine._invoke (the single chokepoint for all tool execution)
-    - Before each tool runs, sends tool name + params to AgentShield
+    - Before each tool runs, sends tool name + params to AgentGuard
     - BLOCK → yields an error ToolInvokeMessage instead of executing
     - REQUIRE_CONFIRMATION → blocks with descriptive message
     - ALLOW → proceeds to original execution
-    - Fail-open: if AgentShield is unreachable, tool call proceeds
+    - Fail-open: if AgentGuard is unreachable, tool call proceeds
 """
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ from typing import Any, Generator
 
 import httpx
 
-logger = logging.getLogger("agentshield_dify")
+logger = logging.getLogger("agentguard_dify")
 
 _client: httpx.Client | None = None
 _session_id: str | None = None
@@ -43,7 +43,7 @@ def install(
     fail_open: bool = True,
     timeout: float = 10.0,
 ) -> None:
-    """Patch Dify's ToolEngine to route all tool calls through AgentShield.
+    """Patch Dify's ToolEngine to route all tool calls through AgentGuard.
 
     Call this once at application startup.
     """
@@ -61,13 +61,13 @@ def install(
         headers={
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "agentshield-dify/0.1.0",
+            "User-Agent": "agentguard-dify/0.1.0",
         },
         timeout=timeout,
     )
 
     _patch_tool_engine()
-    logger.info("AgentShield installed — guarding all Dify tool calls via %s", core_url)
+    logger.info("AgentGuard installed — guarding all Dify tool calls via %s", core_url)
 
 
 def _ensure_session() -> str:
@@ -90,7 +90,7 @@ def _ensure_session() -> str:
 
 
 def _check_tool_call(tool_name: str, tool_provider: str, params: dict) -> dict:
-    """Check a tool call against AgentShield policy."""
+    """Check a tool call against AgentGuard policy."""
     try:
         resp = _client.post("/api/v1/check", json={
             "session_id": _ensure_session(),
@@ -102,7 +102,7 @@ def _check_tool_call(tool_name: str, tool_provider: str, params: dict) -> dict:
         return resp.json()
     except Exception as e:
         if _config.get("fail_open", True):
-            logger.warning("AgentShield check failed (%s), allowing tool call", e)
+            logger.warning("AgentGuard check failed (%s), allowing tool call", e)
             return {"action": "ALLOW"}
         raise
 
@@ -143,7 +143,7 @@ def _patch_tool_engine() -> None:
             reason = result.get("reason", "Blocked by security policy")
             trace_id = result.get("trace_id", "")
             logger.warning(
-                "AgentShield BLOCKED: tool=%s/%s reason=%s trace=%s",
+                "AgentGuard BLOCKED: tool=%s/%s reason=%s trace=%s",
                 tool_provider, tool_name, reason, trace_id,
             )
             # Yield a text message indicating the block
@@ -158,7 +158,7 @@ def _patch_tool_engine() -> None:
 
         if action == "REQUIRE_CONFIRMATION":
             reason = result.get("reason", "Requires confirmation")
-            logger.info("AgentShield CONFIRM: tool=%s/%s reason=%s", tool_provider, tool_name, reason)
+            logger.info("AgentGuard CONFIRM: tool=%s/%s reason=%s", tool_provider, tool_name, reason)
             from core.tools.entities.tool_entities import ToolInvokeMessage
             yield ToolInvokeMessage(
                 type=ToolInvokeMessage.MessageType.TEXT,
@@ -174,4 +174,4 @@ def _patch_tool_engine() -> None:
         )
 
     ToolEngine._invoke = guarded_invoke
-    logger.info("ToolEngine._invoke patched with AgentShield guard")
+    logger.info("ToolEngine._invoke patched with AgentGuard guard")

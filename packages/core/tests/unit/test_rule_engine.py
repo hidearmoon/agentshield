@@ -1,13 +1,13 @@
 """Tests for Rule Engine — Layer 1 detection."""
 
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.intent.models import (
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.intent.models import (
     ToolCall,
     IntentContext,
     Intent,
     DecisionAction,
 )
-from agentshield_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
 
 
 class TestRuleEngine:

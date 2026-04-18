@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import pytest
 
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.models import ToolCall, IntentContext, Intent
-from agentshield_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.models import ToolCall, IntentContext, Intent
+from agentguard_core.engine.trust.levels import TrustLevel
 
 
 class TestSanitizationBypasses:

@@ -16,14 +16,14 @@ try:
 except ImportError:
     _conn_ok = False
 
-PG_URL = "postgresql+asyncpg://agentshield:test-password@localhost:5433/agentshield_test"
+PG_URL = "postgresql+asyncpg://agentguard:test-password@localhost:5433/agentguard_test"
 
 pytestmark = pytest.mark.skipif(not _conn_ok, reason="asyncpg not available")
 
 
 @pytest.fixture(autouse=True)
 def set_pg_url(monkeypatch):
-    monkeypatch.setenv("AGENTSHIELD_DATABASE_URL", PG_URL)
+    monkeypatch.setenv("AGENTGUARD_DATABASE_URL", PG_URL)
 
 
 @pytest.fixture
@@ -31,10 +31,10 @@ async def db():
     """Initialize DB and yield a session."""
     # Re-import to pick up env var
     from importlib import reload
-    import agentshield_core.config
+    import agentguard_core.config
 
-    reload(agentshield_core.config)
-    import agentshield_core.storage.postgres as pg_mod
+    reload(agentguard_core.config)
+    import agentguard_core.storage.postgres as pg_mod
 
     # Create new engine with test URL
     from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
@@ -55,7 +55,7 @@ async def db():
 class TestAgentCRUD:
     @pytest.mark.asyncio
     async def test_create_and_read_agent(self, db):
-        from agentshield_core.storage.postgres import Agent
+        from agentguard_core.storage.postgres import Agent
 
         agent = Agent(
             agent_id=f"test-agent-{uuid.uuid4().hex[:8]}",
@@ -74,7 +74,7 @@ class TestAgentCRUD:
     @pytest.mark.asyncio
     async def test_query_agent(self, db):
         from sqlalchemy import select
-        from agentshield_core.storage.postgres import Agent
+        from agentguard_core.storage.postgres import Agent
 
         agent_id = f"query-agent-{uuid.uuid4().hex[:8]}"
         db.add(Agent(agent_id=agent_id, name="Query Agent"))
@@ -89,7 +89,7 @@ class TestAgentCRUD:
 class TestPolicyCRUD:
     @pytest.mark.asyncio
     async def test_create_policy_with_rules(self, db):
-        from agentshield_core.storage.postgres import Policy, PolicyRule
+        from agentguard_core.storage.postgres import Policy, PolicyRule
 
         policy = Policy(
             name=f"test-policy-{uuid.uuid4().hex[:8]}",
@@ -121,7 +121,7 @@ class TestPolicyCRUD:
 
     @pytest.mark.asyncio
     async def test_policy_version_uniqueness(self, db):
-        from agentshield_core.storage.postgres import Policy
+        from agentguard_core.storage.postgres import Policy
         from sqlalchemy.exc import IntegrityError
 
         unique_name = f"unique-{uuid.uuid4().hex[:8]}"
@@ -139,7 +139,7 @@ class TestPolicyCRUD:
 class TestUserCRUD:
     @pytest.mark.asyncio
     async def test_create_user(self, db):
-        from agentshield_core.storage.postgres import User
+        from agentguard_core.storage.postgres import User
 
         user = User(
             email=f"test-{uuid.uuid4().hex[:8]}@example.com",

@@ -1,4 +1,4 @@
-package agentshield
+package agentguard
 
 import (
 	"testing"

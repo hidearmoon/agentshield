@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from agentshield_core.engine.trace.models import TraceSpan
-from agentshield_core.engine.trace.merkle import MerkleChain
+from agentguard_core.engine.trace.models import TraceSpan
+from agentguard_core.engine.trace.merkle import MerkleChain
 
 
 def _make_span(trace_id: str = "trace-1", span_id: str = "span-1", tool: str = "test") -> TraceSpan:

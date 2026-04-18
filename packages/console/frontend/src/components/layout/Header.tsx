@@ -13,7 +13,7 @@ const TITLES: Record<string, string> = {
 export function Header() {
   const { pathname } = useLocation();
   const basePath = "/" + pathname.split("/").filter(Boolean)[0];
-  const title = TITLES[basePath] || "AgentShield";
+  const title = TITLES[basePath] || "AgentGuard";
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-800/50 bg-surface/80 backdrop-blur-sm px-6">

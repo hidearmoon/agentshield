@@ -1,7 +1,7 @@
 """Tests for Ed25519 policy signing."""
 
 import pytest
-from agentshield_core.policy.signer import PolicySigner
+from agentguard_core.policy.signer import PolicySigner
 
 
 class TestPolicySigner:

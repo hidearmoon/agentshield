@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== AgentShield Dev Setup ==="
+echo "=== AgentGuard Dev Setup ==="
 
 # Start infrastructure services
 echo "Starting PostgreSQL and ClickHouse..."
@@ -24,7 +24,7 @@ cd packages/console/frontend && npm install && cd ../../..
 
 echo ""
 echo "=== Setup Complete ==="
-echo "Start core engine:    cd packages/core && uv run uvicorn agentshield_core.app:app --reload"
-echo "Start proxy:          cd packages/proxy && uv run uvicorn agentshield_proxy.app:app --port 8080 --reload"
-echo "Start console:        cd packages/console/backend && uv run uvicorn agentshield_console.app:app --port 8100 --reload"
+echo "Start core engine:    cd packages/core && uv run uvicorn agentguard_core.app:app --reload"
+echo "Start proxy:          cd packages/proxy && uv run uvicorn agentguard_proxy.app:app --port 8080 --reload"
+echo "Start console:        cd packages/console/backend && uv run uvicorn agentguard_console.app:app --port 8100 --reload"
 echo "Start frontend:       cd packages/console/frontend && npm run dev"

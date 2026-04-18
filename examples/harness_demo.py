@@ -1,4 +1,4 @@
-"""AgentShield Harness Demo — 安全 Agent 执行引擎。
+"""AgentGuard Harness Demo — 安全 Agent 执行引擎。
 
 运行方式:
     export ANTHROPIC_API_KEY=your-key   # 或 OPENAI_API_KEY
@@ -7,8 +7,8 @@
 
 import asyncio
 
-from agentshield_core.harness import AgentHarness
-from agentshield_core.llm.providers.anthropic import AnthropicClient
+from agentguard_core.harness import AgentHarness
+from agentguard_core.llm.providers.anthropic import AnthropicClient
 
 
 # ─── 你的工具函数（完全不需要改动）───────────────────────────────
@@ -53,7 +53,7 @@ async def main():
         llm = AnthropicClient(api_key=os.environ["ANTHROPIC_API_KEY"], model="claude-sonnet-4-20250514")
         print("使用 Anthropic Claude")
     elif os.environ.get("OPENAI_API_KEY"):
-        from agentshield_core.llm.providers.openai import OpenAIClient
+        from agentguard_core.llm.providers.openai import OpenAIClient
 
         llm = OpenAIClient(api_key=os.environ["OPENAI_API_KEY"], model="gpt-4o-mini")
         print("使用 OpenAI GPT-4o-mini")
@@ -69,7 +69,7 @@ async def main():
     )
 
     print("\n" + "=" * 60)
-    print("AgentShield Harness Demo")
+    print("AgentGuard Harness Demo")
     print("输入任务让 Agent 执行，安全检查自动进行")
     print("输入 quit 退出")
     print("=" * 60)

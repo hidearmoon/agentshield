@@ -145,7 +145,7 @@ export default function SettingsPage() {
             </h3>
             <div className="text-sm text-gray-300">
               <div>
-                AgentShield Console <span className="text-accent">v1.0.0</span>
+                AgentGuard Console <span className="text-accent">v1.0.0</span>
               </div>
               <div className="text-xs text-gray-500 mt-1">
                 Runtime security platform for AI agents

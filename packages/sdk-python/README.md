@@ -1,13 +1,13 @@
-# AgentShield Python SDK
+# AgentGuard Python SDK
 
 Lightweight security guardrails for AI agents. All security logic runs server-side.
 
 ## Quick Start
 
 ```python
-from agentshield import Shield
+from agentguard import Shield
 
-shield = Shield()  # reads AGENTSHIELD_API_KEY from env
+shield = Shield()  # reads AGENTGUARD_API_KEY from env
 
 @shield.guard
 async def send_email(to: str, body: str) -> str:
@@ -29,7 +29,7 @@ async with shield.session("Summarize my emails") as s:
 ## Error Handling
 
 ```python
-from agentshield import Shield, ToolCallBlocked, ConfirmationRejected, ServerError
+from agentguard import Shield, ToolCallBlocked, ConfirmationRejected, ServerError
 
 shield = Shield()
 
@@ -61,12 +61,12 @@ shield = Shield(
 ```
 
 Or via environment variables:
-- `AGENTSHIELD_API_KEY` (required)
-- `AGENTSHIELD_BASE_URL` (default: http://localhost:8000)
-- `AGENTSHIELD_TIMEOUT` (default: 10.0)
-- `AGENTSHIELD_AGENT_ID`
+- `AGENTGUARD_API_KEY` (required)
+- `AGENTGUARD_BASE_URL` (default: http://localhost:8000)
+- `AGENTGUARD_TIMEOUT` (default: 10.0)
+- `AGENTGUARD_AGENT_ID`
 
-Or via `agentshield.yaml` in the working directory.
+Or via `agentguard.yaml` in the working directory.
 
 ## Data Sanitization
 
@@ -83,7 +83,7 @@ result = await shield.sanitize(
 ## Framework Integrations
 
 ```python
-from agentshield.integrations import LangChainShield, CrewAIShield
+from agentguard.integrations import LangChainShield, CrewAIShield
 
 # LangChain
 guarded = LangChainShield(shield).wrap(agent_executor)
@@ -92,10 +92,10 @@ guarded = LangChainShield(shield).wrap(agent_executor)
 guarded = CrewAIShield(shield).wrap(crew)
 
 # AutoGen
-from agentshield.integrations import AutoGenShield
+from agentguard.integrations import AutoGenShield
 AutoGenShield(shield).wrap(assistant)
 
 # Claude Agent SDK
-from agentshield.integrations import ClaudeAgentShield
-guarded_handler = ClaudeAgentShield(shield).wrap(my_tool_handler)
+from agentguard.integrations import ClaudeAgentGuard
+guarded_handler = ClaudeAgentGuard(shield).wrap(my_tool_handler)
 ```

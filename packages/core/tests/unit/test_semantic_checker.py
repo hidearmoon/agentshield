@@ -6,15 +6,15 @@ import json
 
 import pytest
 
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.intent.models import (
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.intent.models import (
     DecisionAction,
     Intent,
     IntentContext,
     ToolCall,
 )
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockSemanticLLM(LLMClient):

@@ -8,13 +8,13 @@ from unittest.mock import AsyncMock, patch
 import pytest
 import httpx
 
-from agentshield import Shield, ToolCallBlocked, ConfirmationRejected
+from agentguard import Shield, ToolCallBlocked, ConfirmationRejected
 
 
 @pytest.fixture(autouse=True)
 def set_api_key():
     """Set API key env var for all tests."""
-    with patch.dict(os.environ, {"AGENTSHIELD_API_KEY": "test-key-123"}):
+    with patch.dict(os.environ, {"AGENTGUARD_API_KEY": "test-key-123"}):
         yield
 
 
@@ -183,7 +183,7 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_server_error_wrapped(self):
         """500 error should be wrapped as ServerError."""
-        from agentshield import ServerError
+        from agentguard import ServerError
 
         shield = Shield(api_key="test-key")
 
@@ -210,7 +210,7 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_connection_error_wrapped(self):
         """Connection failure should be wrapped as ServerError."""
-        from agentshield import ServerError
+        from agentguard import ServerError
 
         shield = Shield(api_key="test-key")
 

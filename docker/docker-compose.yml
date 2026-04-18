@@ -2,15 +2,15 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: agentshield
-      POSTGRES_USER: agentshield
+      POSTGRES_DB: agentguard
+      POSTGRES_USER: agentguard
       POSTGRES_PASSWORD: dev-password
     ports:
       - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agentshield"]
+      test: ["CMD-SHELL", "pg_isready -U agentguard"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -35,11 +35,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      AGENTSHIELD_DATABASE_URL: postgresql+asyncpg://agentshield:dev-password@postgres:5432/agentshield
-      AGENTSHIELD_CLICKHOUSE_HOST: clickhouse
-      AGENTSHIELD_LLM_PROVIDER: openai
-      AGENTSHIELD_OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      AGENTSHIELD_ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AGENTGUARD_DATABASE_URL: postgresql+asyncpg://agentguard:dev-password@postgres:5432/agentguard
+      AGENTGUARD_CLICKHOUSE_HOST: clickhouse
+      AGENTGUARD_LLM_PROVIDER: openai
+      AGENTGUARD_OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      AGENTGUARD_ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,9 +53,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      AGENTSHIELD_PROXY_CORE_ENGINE_URL: http://core:8000
-      AGENTSHIELD_PROXY_UPSTREAM_URL: ${UPSTREAM_TOOL_SERVICE:-http://host.docker.internal:9000}
-      AGENTSHIELD_PROXY_PORT: "8080"
+      AGENTGUARD_PROXY_CORE_ENGINE_URL: http://core:8000
+      AGENTGUARD_PROXY_UPSTREAM_URL: ${UPSTREAM_TOOL_SERVICE:-http://host.docker.internal:9000}
+      AGENTGUARD_PROXY_PORT: "8080"
     depends_on:
       - core
 
@@ -66,10 +66,10 @@ services:
     ports:
       - "8100:8100"
     environment:
-      AGENTSHIELD_CONSOLE_DATABASE_URL: postgresql+asyncpg://agentshield:dev-password@postgres:5432/agentshield
-      AGENTSHIELD_CONSOLE_CLICKHOUSE_HOST: clickhouse
-      AGENTSHIELD_CONSOLE_PORT: "8100"
-      AGENTSHIELD_CONSOLE_CORE_API_URL: http://core:8000
+      AGENTGUARD_CONSOLE_DATABASE_URL: postgresql+asyncpg://agentguard:dev-password@postgres:5432/agentguard
+      AGENTGUARD_CONSOLE_CLICKHOUSE_HOST: clickhouse
+      AGENTGUARD_CONSOLE_PORT: "8100"
+      AGENTGUARD_CONSOLE_CORE_API_URL: http://core:8000
     depends_on:
       postgres:
         condition: service_healthy

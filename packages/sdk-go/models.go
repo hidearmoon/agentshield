@@ -1,8 +1,8 @@
-// Package agentshield provides a lightweight SDK for the AgentShield security engine.
+// Package agentguard provides a lightweight SDK for the AgentGuard security engine.
 //
 // All security decisions happen server-side. The SDK captures tool call context,
 // forwards it to the core engine, and enforces the returned decision.
-package agentshield
+package agentguard
 
 // Decision represents the server's verdict on a tool call.
 type Decision string
@@ -54,10 +54,10 @@ type SessionInfo struct {
 
 // Config holds the SDK configuration.
 type Config struct {
-	// APIKey is required. Read from AGENTSHIELD_API_KEY env var or set explicitly.
+	// APIKey is required. Read from AGENTGUARD_API_KEY env var or set explicitly.
 	APIKey string
 
-	// BaseURL of the AgentShield core engine. Defaults to http://localhost:8000.
+	// BaseURL of the AgentGuard core engine. Defaults to http://localhost:8000.
 	BaseURL string
 
 	// Timeout for HTTP requests in milliseconds. Defaults to 10000.

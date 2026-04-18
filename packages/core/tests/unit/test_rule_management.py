@@ -1,13 +1,13 @@
 """Tests for rule management operations (add, remove, list, enable/disable)."""
 
-from agentshield_core.engine.intent.rule_engine import RuleEngine, Rule, BUILTIN_RULES
-from agentshield_core.engine.intent.models import (
+from agentguard_core.engine.intent.rule_engine import RuleEngine, Rule, BUILTIN_RULES
+from agentguard_core.engine.intent.models import (
     ToolCall,
     IntentContext,
     Intent,
     Decision,
 )
-from agentshield_core.policy.dsl import load_rules_from_dict, load_rules_from_string
+from agentguard_core.policy.dsl import load_rules_from_dict, load_rules_from_string
 
 
 class TestRuleManagement:
@@ -430,7 +430,7 @@ class TestDSLExtraConditions:
         yaml_file = tmp_path / "rules.yaml"
         yaml_file.write_text(yaml_content)
 
-        from agentshield_core.policy.dsl import load_rules_from_yaml
+        from agentguard_core.policy.dsl import load_rules_from_yaml
 
         rules = load_rules_from_yaml(yaml_file)
         assert len(rules) == 2

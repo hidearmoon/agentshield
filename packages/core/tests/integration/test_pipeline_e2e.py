@@ -11,15 +11,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLMClient(LLMClient):
@@ -72,7 +72,7 @@ class TestPipelineE2E:
     """Full pipeline end-to-end tests."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_safe_tool_call_allowed(self, mock_insert, pipeline):
         """A safe tool call matching the intent should be ALLOWED."""
         session_id, trace_id = await pipeline.create_session(
@@ -92,7 +92,7 @@ class TestPipelineE2E:
         assert result.trace_id == trace_id
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_dangerous_tool_blocked_in_external_context(self, mock_insert, pipeline):
         """send_email should be BLOCKED when processing external data."""
         session_id, trace_id = await pipeline.create_session(
@@ -109,7 +109,7 @@ class TestPipelineE2E:
         assert result.action == "BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_code_exec_blocked_in_untrusted_context(self, mock_insert, pipeline):
         """execute_code should be BLOCKED when data is UNTRUSTED."""
         session_id, _ = await pipeline.create_session(
@@ -126,7 +126,7 @@ class TestPipelineE2E:
         assert result.action == "BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_invalid_client_trust_level_ignored(self, mock_insert, pipeline):
         """Invalid client_trust_level should not crash, server decides."""
         session_id, _ = await pipeline.create_session(
@@ -145,7 +145,7 @@ class TestPipelineE2E:
         assert result.action in ("ALLOW", "BLOCK", "REQUIRE_CONFIRMATION")
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_stateless_mode_auto_creates_session(self, mock_insert, pipeline):
         """Calling check without session should auto-create one."""
         result = await pipeline.check_tool_call(
@@ -158,7 +158,7 @@ class TestPipelineE2E:
         assert result.trace_id  # Should have a trace
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_tool_history_tracked(self, mock_insert, pipeline):
         """Tool call history should accumulate across calls in the same session."""
         session_id, _ = await pipeline.create_session(
@@ -178,7 +178,7 @@ class TestPipelineE2E:
         assert len(ctx.tool_call_history) == 3
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_trace_spans_recorded(self, mock_insert, pipeline):
         """Each tool call should record a trace span."""
         session_id, trace_id = await pipeline.create_session(
@@ -200,7 +200,7 @@ class TestPipelineE2E:
         assert trace.spans[0].tool_name == "summarize"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_permission_engine_restricts_untrusted(self, mock_insert, pipeline):
         """UNTRUSTED data should restrict available tools to summarize/classify only."""
         session_id, _ = await pipeline.create_session(
@@ -219,7 +219,7 @@ class TestPipelineE2E:
         assert "not permitted" in result.reason
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_client_trust_upgrade_rejected(self, mock_insert, pipeline):
         """Client claiming TRUSTED for external data should be overridden by server."""
         session_id, _ = await pipeline.create_session(
@@ -242,7 +242,7 @@ class TestSessionManagement:
     """Test session lifecycle and memory management."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_session_eviction_on_max_capacity(self, mock_insert, pipeline):
         """Sessions should be evicted when max capacity is reached."""
         # Create many sessions
@@ -254,7 +254,7 @@ class TestSessionManagement:
         assert len(pipeline._sessions) == 50
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_expired_sessions_cleaned(self, mock_insert, pipeline):
         """Expired sessions should be removed on next create."""
         import time as t

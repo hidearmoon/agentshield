@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== AgentShield Attack Sample Regression Test ==="
+echo "=== AgentGuard Attack Sample Regression Test ==="
 echo ""
 
 cd "$(dirname "$0")/../packages/core"
@@ -14,10 +14,10 @@ echo "Running attack sample detection audit..."
 uv run python -c "
 import json, asyncio
 from pathlib import Path
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.models import ToolCall, IntentContext, Intent
-from agentshield_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.models import ToolCall, IntentContext, Intent
+from agentguard_core.engine.trust.levels import TrustLevel
 
 async def audit():
     engine=RuleEngine(); detector=AnomalyDetector()

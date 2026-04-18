@@ -1,5 +1,5 @@
 /**
- * AgentShield Security Check node for n8n.
+ * AgentGuard Security Check node for n8n.
  *
  * Two usage patterns:
  *
@@ -7,7 +7,7 @@
  *    Place before or after the Agent node. Routes items to "Allowed" or "Blocked" output.
  *
  * 2. As a general security gate in any workflow:
- *    Check any action against AgentShield policy before executing.
+ *    Check any action against AgentGuard policy before executing.
  *
  * Outputs:
  *   - Output 0 ("Allowed"): Items that passed the security check
@@ -21,17 +21,17 @@ import type {
   INodeTypeDescription,
 } from "n8n-workflow";
 
-export class AgentShieldNode implements INodeType {
+export class AgentGuardNode implements INodeType {
   description: INodeTypeDescription = {
-    displayName: "AgentShield Security Check",
+    displayName: "AgentGuard Security Check",
     name: "agentShield",
-    icon: "file:agentshield.svg",
+    icon: "file:agentguard.svg",
     group: ["transform"],
     version: 1,
     subtitle: "={{$parameter[\"toolName\"]}}",
-    description: "Check AI agent tool calls against AgentShield security policy",
+    description: "Check AI agent tool calls against AgentGuard security policy",
     defaults: {
-      name: "AgentShield",
+      name: "AgentGuard",
     },
     inputs: ["main"],
     outputs: ["main", "main"],
@@ -77,7 +77,7 @@ export class AgentShieldNode implements INodeType {
         name: "failOpen",
         type: "boolean",
         default: true,
-        description: "Whether to allow the action if AgentShield is unreachable",
+        description: "Whether to allow the action if AgentGuard is unreachable",
       },
     ],
   };
@@ -113,7 +113,7 @@ export class AgentShieldNode implements INodeType {
           headers: {
             Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
-            "User-Agent": "agentshield-n8n/0.1.0",
+            "User-Agent": "agentguard-n8n/0.1.0",
           },
           body: {
             session_id: `n8n-${this.getExecutionId()}`,
@@ -135,7 +135,7 @@ export class AgentShieldNode implements INodeType {
       const enrichedItem: INodeExecutionData = {
         json: {
           ...items[i].json,
-          _agentshield: {
+          _agentguard: {
             decision: result.action,
             reason: result.reason,
             trace_id: result.trace_id,

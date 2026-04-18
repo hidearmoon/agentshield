@@ -1,6 +1,6 @@
-# Contributing to AgentShield
+# Contributing to AgentGuard
 
-Thank you for your interest in contributing to AgentShield. This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to AgentGuard. This document provides guidelines and instructions for contributing.
 
 ## Code of Conduct
 
@@ -19,8 +19,8 @@ Be respectful. Be constructive. Assume good intent. We are building security inf
 
 ```bash
 # Clone the repository
-git clone https://github.com/hidearmoon/agentshield.git
-cd agentshield
+git clone https://github.com/hidearmoon/agentguard.git
+cd agentguard
 
 # Start dependencies
 make dev
@@ -121,7 +121,7 @@ Attack samples are stored in `tests/security/samples/` as JSONL files. Each line
 
 ## Adding a New Built-in Rule
 
-1. Add the rule logic in `packages/core/src/agentshield_core/engine/intent/rule_engine.py`
+1. Add the rule logic in `packages/core/src/agentguard_core/engine/intent/rule_engine.py`
 2. Register it in `configs/builtin_rules.yaml`
 3. Add unit tests in `packages/core/tests/unit/test_rule_engine.py`
 4. Add security tests with attack samples that the rule should catch
@@ -129,12 +129,12 @@ Attack samples are stored in `tests/security/samples/` as JSONL files. Each line
 
 ## Adding a Framework Integration
 
-1. Create `packages/sdk-python/src/agentshield/integrations/your_framework.py`
-2. Export it from `packages/sdk-python/src/agentshield/integrations/__init__.py`
+1. Create `packages/sdk-python/src/agentguard/integrations/your_framework.py`
+2. Export it from `packages/sdk-python/src/agentguard/integrations/__init__.py`
 3. Add tests in `packages/sdk-python/tests/test_integrations.py`
 4. Add an example in `examples/`
 5. Update the SDK README
 
 ## License
 
-By contributing to AgentShield, you agree that your contributions will be licensed under the Apache License 2.0.
+By contributing to AgentGuard, you agree that your contributions will be licensed under the Apache License 2.0.

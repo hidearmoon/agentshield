@@ -2,7 +2,7 @@
 
 import base64
 import pytest
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
 
 
 class TestEncodingBypass:

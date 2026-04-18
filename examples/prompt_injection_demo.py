@@ -1,28 +1,28 @@
 """
 Prompt Injection Defense Demo — End-to-End.
 
-This demo shows how AgentShield blocks a real prompt injection attack
+This demo shows how AgentGuard blocks a real prompt injection attack
 where a malicious email tricks an AI agent into exfiltrating data.
 
 Scenario:
     1. User asks agent: "Summarize my latest emails"
     2. Agent reads inbox — one email contains a hidden prompt injection
     3. The injected instructions tell the agent to forward all emails to attacker@evil.com
-    4. AgentShield intercepts the send_email call and BLOCKS it because:
+    4. AgentGuard intercepts the send_email call and BLOCKS it because:
        - The data context is EXTERNAL (email body)
        - The tool (send_email to external domain) is restricted at EXTERNAL trust
        - The intent ("summarize emails") doesn't match "send to external recipient"
 
 Run:
-    # Start the AgentShield server first
-    cd packages/core && uv run uvicorn agentshield_core.app:app --reload
+    # Start the AgentGuard server first
+    cd packages/core && uv run uvicorn agentguard_core.app:app --reload
 
     # Then run this demo
     python examples/prompt_injection_demo.py
 """
 
 import asyncio
-from agentshield import Shield, ToolCallBlocked
+from agentguard import Shield, ToolCallBlocked
 
 
 # --- Simulated tools ---
@@ -73,7 +73,7 @@ async def main():
     shield = Shield(api_key="demo-key-123")
 
     print("=" * 70)
-    print("AgentShield Prompt Injection Defense Demo")
+    print("AgentGuard Prompt Injection Defense Demo")
     print("=" * 70)
 
     try:
@@ -132,7 +132,7 @@ async def main():
                 print(f"  SENT: {result}")
                 print("  !!! SECURITY FAILURE — injection succeeded !!!\n")
             except ToolCallBlocked as e:
-                print(f"  BLOCKED by AgentShield!")
+                print(f"  BLOCKED by AgentGuard!")
                 print(f"  Reason: {e.reason}")
                 print(f"  Trace ID: {e.trace_id}")
                 print(f"\n  The attack was prevented. The email was NOT sent.\n")
@@ -155,8 +155,8 @@ async def main():
 
     except Exception as e:
         print(f"\nServer error: {e}")
-        print("Make sure the AgentShield server is running:")
-        print("  cd packages/core && uv run uvicorn agentshield_core.app:app --reload")
+        print("Make sure the AgentGuard server is running:")
+        print("  cd packages/core && uv run uvicorn agentguard_core.app:app --reload")
 
     await shield.close()
 

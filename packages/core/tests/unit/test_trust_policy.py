@@ -5,9 +5,9 @@ from __future__ import annotations
 import tempfile
 
 
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.trust.marker import TrustPolicy
-from agentshield_core.engine.trust.policy import load_trust_policy, _extract_restrictions
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.trust.marker import TrustPolicy
+from agentguard_core.engine.trust.policy import load_trust_policy, _extract_restrictions
 
 
 class TestTrustPolicy:

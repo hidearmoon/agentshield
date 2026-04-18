@@ -1,4 +1,4 @@
-package agentshield
+package agentguard
 
 import (
 	"context"
@@ -6,12 +6,12 @@ import (
 	"os"
 )
 
-// Shield is the primary entry point for the AgentShield Go SDK.
+// Shield is the primary entry point for the AgentGuard Go SDK.
 //
 // All security logic lives server-side. Shield captures tool call context,
 // forwards it to the core engine, and enforces the returned decision.
 //
-//	shield, err := agentshield.New(agentshield.Config{})
+//	shield, err := agentguard.New(agentguard.Config{})
 //	if err != nil { ... }
 //
 //	session, err := shield.NewSession(ctx, "Handle user request", nil)
@@ -26,24 +26,24 @@ type Shield struct {
 
 // New creates a Shield instance.
 //
-// The API key is read from Config.APIKey or the AGENTSHIELD_API_KEY env var.
+// The API key is read from Config.APIKey or the AGENTGUARD_API_KEY env var.
 // Returns a ConfigError if no API key is available.
 func New(cfg Config) (*Shield, error) {
 	if cfg.APIKey == "" {
-		cfg.APIKey = os.Getenv("AGENTSHIELD_API_KEY")
+		cfg.APIKey = os.Getenv("AGENTGUARD_API_KEY")
 	}
 	if cfg.APIKey == "" {
 		return nil, &ConfigError{
-			Message: "API key is required. Set the AGENTSHIELD_API_KEY environment variable or pass Config.APIKey.",
+			Message: "API key is required. Set the AGENTGUARD_API_KEY environment variable or pass Config.APIKey.",
 		}
 	}
 	if cfg.BaseURL == "" {
-		if envURL := os.Getenv("AGENTSHIELD_BASE_URL"); envURL != "" {
+		if envURL := os.Getenv("AGENTGUARD_BASE_URL"); envURL != "" {
 			cfg.BaseURL = envURL
 		}
 	}
 	if cfg.AgentID == "" {
-		if envID := os.Getenv("AGENTSHIELD_AGENT_ID"); envID != "" {
+		if envID := os.Getenv("AGENTGUARD_AGENT_ID"); envID != "" {
 			cfg.AgentID = envID
 		}
 	}
@@ -67,7 +67,7 @@ func (s *Shield) Guard(
 	return func(ctx context.Context, params map[string]any) (any, error) {
 		result, err := s.client.CheckToolCall(ctx, s.defaultSID, toolName, params, "", nil)
 		if err != nil {
-			return nil, fmt.Errorf("agentshield: check tool call: %w", err)
+			return nil, fmt.Errorf("agentguard: check tool call: %w", err)
 		}
 
 		switch result.Action {
@@ -84,7 +84,7 @@ func (s *Shield) Guard(
 			}
 			confirmed, err := s.config.ConfirmFunc(toolName, params)
 			if err != nil {
-				return nil, fmt.Errorf("agentshield: confirm callback: %w", err)
+				return nil, fmt.Errorf("agentguard: confirm callback: %w", err)
 			}
 			if !confirmed {
 				return nil, &ConfirmationRejectedError{Tool: toolName}
@@ -100,7 +100,7 @@ func (s *Shield) NewSession(ctx context.Context, userMessage string, metadata ma
 	agentID := s.config.AgentID
 	info, err := s.client.CreateSession(ctx, userMessage, agentID, metadata)
 	if err != nil {
-		return nil, fmt.Errorf("agentshield: create session: %w", err)
+		return nil, fmt.Errorf("agentguard: create session: %w", err)
 	}
 
 	return &Session{

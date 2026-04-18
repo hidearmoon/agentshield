@@ -1,4 +1,4 @@
-/** HTTP client for the AgentShield core API. */
+/** HTTP client for the AgentGuard core API. */
 
 import type {
   CheckResult,
@@ -12,14 +12,14 @@ import { Decision } from "./models.js";
 
 const SDK_VERSION = "0.1.0";
 
-export class AgentShieldError extends Error {
+export class AgentGuardError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "AgentShieldError";
+    this.name = "AgentGuardError";
   }
 }
 
-export class ToolCallBlocked extends AgentShieldError {
+export class ToolCallBlocked extends AgentGuardError {
   constructor(
     public readonly tool: string,
     public readonly reason: string,
@@ -30,14 +30,14 @@ export class ToolCallBlocked extends AgentShieldError {
   }
 }
 
-export class ConfirmationRejected extends AgentShieldError {
+export class ConfirmationRejected extends AgentGuardError {
   constructor(public readonly tool: string) {
     super(`Tool call '${tool}' requires confirmation and was not confirmed`);
     this.name = "ConfirmationRejected";
   }
 }
 
-export class ConfigError extends AgentShieldError {
+export class ConfigError extends AgentGuardError {
   constructor(message: string) {
     super(message);
     this.name = "ConfigError";
@@ -45,7 +45,7 @@ export class ConfigError extends AgentShieldError {
 }
 
 /**
- * Async HTTP client that forwards requests to the AgentShield core engine.
+ * Async HTTP client that forwards requests to the AgentGuard core engine.
  *
  * Uses the built-in `fetch` API (available in Node 18+).
  */
@@ -62,7 +62,7 @@ export class ServerClient {
     this.headers = {
       Authorization: `Bearer ${config.apiKey}`,
       "Content-Type": "application/json",
-      "User-Agent": `agentshield-ts/${SDK_VERSION}`,
+      "User-Agent": `agentguard-ts/${SDK_VERSION}`,
     };
   }
 
@@ -83,7 +83,7 @@ export class ServerClient {
 
         if (!response.ok) {
           const text = await response.text();
-          throw new AgentShieldError(
+          throw new AgentGuardError(
             `HTTP ${response.status}: ${text}`,
           );
         }
@@ -93,7 +93,7 @@ export class ServerClient {
         lastError = err instanceof Error ? err : new Error(String(err));
         // Only retry on network / timeout errors, not on 4xx
         if (
-          lastError instanceof AgentShieldError ||
+          lastError instanceof AgentGuardError ||
           attempt === this.maxRetries
         ) {
           throw lastError;
@@ -103,7 +103,7 @@ export class ServerClient {
       }
     }
 
-    throw lastError ?? new AgentShieldError("Request failed");
+    throw lastError ?? new AgentGuardError("Request failed");
   }
 
   async checkToolCall(opts: {

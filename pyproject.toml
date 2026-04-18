@@ -1,5 +1,5 @@
 [project]
-name = "agentshield-monorepo"
+name = "agentguard-monorepo"
 version = "1.0.0"
 description = "AI Agent Runtime Security Platform"
 requires-python = ">=3.12"

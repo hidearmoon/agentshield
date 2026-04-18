@@ -88,7 +88,7 @@ export function Sidebar() {
           </svg>
         </div>
         <div>
-          <div className="text-sm font-semibold text-white">AgentShield</div>
+          <div className="text-sm font-semibold text-white">AgentGuard</div>
           <div className="text-[10px] text-gray-500 uppercase tracking-wider">Console</div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export function Sidebar() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs font-medium text-gray-300 truncate">Admin</div>
-            <div className="text-[10px] text-gray-500 truncate">admin@agentshield.io</div>
+            <div className="text-[10px] text-gray-500 truncate">admin@agentguard.io</div>
           </div>
         </div>
       </div>

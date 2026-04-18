@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import pytest
 
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.models import IntentContext, Intent
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.trace.merkle import MerkleChain
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
-from agentshield_core.engine.sanitization.pipeline import DataSanitizationPipeline
-from agentshield_core.schemas.registry import SchemaRegistry
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.models import IntentContext, Intent
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.trace.merkle import MerkleChain
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.sanitization.pipeline import DataSanitizationPipeline
+from agentguard_core.schemas.registry import SchemaRegistry
 
 
 @pytest.fixture

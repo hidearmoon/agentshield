@@ -6,13 +6,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from agentshield_core.llm.client import LLMMessage
+from agentguard_core.llm.client import LLMMessage
 
 
 class TestOpenAIProvider:
     @pytest.mark.asyncio
     async def test_chat_returns_response(self):
-        from agentshield_core.llm.providers.openai import OpenAIClient
+        from agentguard_core.llm.providers.openai import OpenAIClient
 
         # Mock the OpenAI async client
         mock_response = MagicMock()
@@ -24,7 +24,7 @@ class TestOpenAIProvider:
         mock_response.usage.completion_tokens = 5
         mock_response.usage.total_tokens = 15
 
-        with patch("agentshield_core.llm.providers.openai.AsyncOpenAI") as mock_cls:
+        with patch("agentguard_core.llm.providers.openai.AsyncOpenAI") as mock_cls:
             mock_instance = MagicMock()
             mock_instance.chat.completions.create = AsyncMock(return_value=mock_response)
             mock_cls.return_value = mock_instance
@@ -38,7 +38,7 @@ class TestOpenAIProvider:
 
     @pytest.mark.asyncio
     async def test_chat_passes_tools(self):
-        from agentshield_core.llm.providers.openai import OpenAIClient
+        from agentguard_core.llm.providers.openai import OpenAIClient
 
         mock_response = MagicMock()
         mock_response.choices = [MagicMock()]
@@ -49,7 +49,7 @@ class TestOpenAIProvider:
         mock_response.usage.completion_tokens = 5
         mock_response.usage.total_tokens = 15
 
-        with patch("agentshield_core.llm.providers.openai.AsyncOpenAI") as mock_cls:
+        with patch("agentguard_core.llm.providers.openai.AsyncOpenAI") as mock_cls:
             mock_instance = MagicMock()
             mock_instance.chat.completions.create = AsyncMock(return_value=mock_response)
             mock_cls.return_value = mock_instance
@@ -64,7 +64,7 @@ class TestOpenAIProvider:
     @pytest.mark.asyncio
     async def test_chat_no_usage(self):
         """Handle response with no usage data."""
-        from agentshield_core.llm.providers.openai import OpenAIClient
+        from agentguard_core.llm.providers.openai import OpenAIClient
 
         mock_response = MagicMock()
         mock_response.choices = [MagicMock()]
@@ -72,7 +72,7 @@ class TestOpenAIProvider:
         mock_response.model = "gpt-4o-mini"
         mock_response.usage = None
 
-        with patch("agentshield_core.llm.providers.openai.AsyncOpenAI") as mock_cls:
+        with patch("agentguard_core.llm.providers.openai.AsyncOpenAI") as mock_cls:
             mock_instance = MagicMock()
             mock_instance.chat.completions.create = AsyncMock(return_value=mock_response)
             mock_cls.return_value = mock_instance
@@ -85,7 +85,7 @@ class TestOpenAIProvider:
 class TestLocalProvider:
     @pytest.mark.asyncio
     async def test_local_client_uses_custom_base_url(self):
-        from agentshield_core.llm.providers.local import LocalClient
+        from agentguard_core.llm.providers.local import LocalClient
 
         mock_response = MagicMock()
         mock_response.choices = [MagicMock()]
@@ -96,7 +96,7 @@ class TestLocalProvider:
         mock_response.usage.completion_tokens = 3
         mock_response.usage.total_tokens = 8
 
-        with patch("agentshield_core.llm.providers.local.AsyncOpenAI") as mock_cls:
+        with patch("agentguard_core.llm.providers.local.AsyncOpenAI") as mock_cls:
             mock_instance = MagicMock()
             mock_instance.chat.completions.create = AsyncMock(return_value=mock_response)
             mock_cls.return_value = mock_instance
@@ -112,7 +112,7 @@ class TestLocalProvider:
 class TestAnthropicProvider:
     @pytest.mark.asyncio
     async def test_chat_separates_system_message(self):
-        from agentshield_core.llm.providers.anthropic import AnthropicClient
+        from agentguard_core.llm.providers.anthropic import AnthropicClient
 
         mock_block = MagicMock()
         mock_block.type = "text"
@@ -125,7 +125,7 @@ class TestAnthropicProvider:
         mock_response.usage.input_tokens = 10
         mock_response.usage.output_tokens = 5
 
-        with patch("agentshield_core.llm.providers.anthropic.anthropic") as mock_mod:
+        with patch("agentguard_core.llm.providers.anthropic.anthropic") as mock_mod:
             mock_instance = MagicMock()
             mock_instance.messages.create = AsyncMock(return_value=mock_response)
             mock_mod.AsyncAnthropic.return_value = mock_instance
@@ -146,7 +146,7 @@ class TestAnthropicProvider:
 
     @pytest.mark.asyncio
     async def test_chat_usage_mapping(self):
-        from agentshield_core.llm.providers.anthropic import AnthropicClient
+        from agentguard_core.llm.providers.anthropic import AnthropicClient
 
         mock_block = MagicMock()
         mock_block.type = "text"
@@ -159,7 +159,7 @@ class TestAnthropicProvider:
         mock_response.usage.input_tokens = 100
         mock_response.usage.output_tokens = 50
 
-        with patch("agentshield_core.llm.providers.anthropic.anthropic") as mock_mod:
+        with patch("agentguard_core.llm.providers.anthropic.anthropic") as mock_mod:
             mock_instance = MagicMock()
             mock_instance.messages.create = AsyncMock(return_value=mock_response)
             mock_mod.AsyncAnthropic.return_value = mock_instance

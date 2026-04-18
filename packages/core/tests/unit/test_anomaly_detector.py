@@ -1,8 +1,8 @@
 """Tests for Anomaly Detector — Layer 2 detection."""
 
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.intent.models import ToolCall, IntentContext, Intent
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.intent.models import ToolCall, IntentContext, Intent
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
 
 
 class TestAnomalyDetector:

@@ -1,10 +1,10 @@
 """Tests for custom rule DSL."""
 
 import pytest
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.intent.models import ToolCall, IntentContext, Intent, DecisionAction
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.policy.dsl import load_rules_from_dict, load_rules_from_string, RuleDSLError
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.intent.models import ToolCall, IntentContext, Intent, DecisionAction
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.policy.dsl import load_rules_from_dict, load_rules_from_string, RuleDSLError
 
 
 class TestRuleDSL:

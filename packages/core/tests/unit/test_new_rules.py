@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from agentshield_core.engine.intent.models import DecisionAction, Intent, IntentContext, ToolCall
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.intent.models import DecisionAction, Intent, IntentContext, ToolCall
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.trust.levels import TrustLevel
 
 
 class TestSecretAccessRule:

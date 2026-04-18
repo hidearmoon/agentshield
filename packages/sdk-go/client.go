@@ -1,4 +1,4 @@
-package agentshield
+package agentguard
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 
 const sdkVersion = "0.1.0"
 
-// Client is the HTTP client for the AgentShield core API.
+// Client is the HTTP client for the AgentGuard core API.
 type Client struct {
 	baseURL    string
 	apiKey     string
@@ -48,18 +48,18 @@ func NewClient(cfg Config) *Client {
 func (c *Client) doPost(ctx context.Context, path string, body any, result any) error {
 	payload, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("agentshield: marshal request: %w", err)
+		return fmt.Errorf("agentguard: marshal request: %w", err)
 	}
 
 	var lastErr error
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+path, bytes.NewReader(payload))
 		if err != nil {
-			return fmt.Errorf("agentshield: create request: %w", err)
+			return fmt.Errorf("agentguard: create request: %w", err)
 		}
 		req.Header.Set("Authorization", "Bearer "+c.apiKey)
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("User-Agent", "agentshield-go/"+sdkVersion)
+		req.Header.Set("User-Agent", "agentguard-go/"+sdkVersion)
 
 		resp, err := c.httpClient.Do(req)
 		if err != nil {
@@ -70,20 +70,20 @@ func (c *Client) doPost(ctx context.Context, path string, body any, result any) 
 		defer resp.Body.Close()
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			lastErr = fmt.Errorf("agentshield: read response: %w", err)
+			lastErr = fmt.Errorf("agentguard: read response: %w", err)
 			continue
 		}
 
 		if resp.StatusCode >= 400 {
-			return fmt.Errorf("agentshield: HTTP %d: %s", resp.StatusCode, string(respBody))
+			return fmt.Errorf("agentguard: HTTP %d: %s", resp.StatusCode, string(respBody))
 		}
 
 		if err := json.Unmarshal(respBody, result); err != nil {
-			return fmt.Errorf("agentshield: unmarshal response: %w", err)
+			return fmt.Errorf("agentguard: unmarshal response: %w", err)
 		}
 		return nil
 	}
-	return fmt.Errorf("agentshield: request failed after %d retries: %w", c.maxRetries, lastErr)
+	return fmt.Errorf("agentguard: request failed after %d retries: %w", c.maxRetries, lastErr)
 }
 
 // checkRequest matches the server's CheckRequest schema.

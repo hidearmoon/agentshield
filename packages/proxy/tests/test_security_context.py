@@ -9,7 +9,7 @@ import httpx
 from starlette.requests import Request
 from starlette.types import Scope
 
-from agentshield_proxy.middleware.security_context import SecurityContextMiddleware
+from agentguard_proxy.middleware.security_context import SecurityContextMiddleware
 
 
 def _make_request(path="/tools/test", body=b'{"key": "value"}'):

@@ -1,8 +1,8 @@
 """
-AgentShield Security Block for AutoGPT Platform.
+AgentGuard Security Block for AutoGPT Platform.
 
 AutoGPT Platform uses a graph-based execution engine where Blocks are the
-unit of extensibility. This module provides an AgentShieldBlock that can be
+unit of extensibility. This module provides an AgentGuardBlock that can be
 placed before any sensitive block in a graph to enforce security policies.
 
 Additionally provides a mixin for existing blocks to add security checks
@@ -11,10 +11,10 @@ via the `is_sensitive_action` + HITL review pattern.
 Setup:
     1. Copy this file to autogpt_platform/backend/backend/blocks/
     2. The block auto-discovery system will pick it up on next restart
-    3. In the AutoGPT UI, add the "AgentShield Security Check" block
+    3. In the AutoGPT UI, add the "AgentGuard Security Check" block
        before sensitive blocks in your graph
 
-The block checks tool calls against the AgentShield core engine and
+The block checks tool calls against the AgentGuard core engine and
 outputs to either the "allowed" or "blocked" pin.
 """
 
@@ -26,13 +26,13 @@ from typing import Any
 
 import httpx
 
-logger = logging.getLogger("agentshield_autogpt")
+logger = logging.getLogger("agentguard_autogpt")
 
 # --- Standalone helper for use outside the Block system ---
 
 
-class AgentShieldChecker:
-    """Stateless security checker that calls the AgentShield core engine."""
+class AgentGuardChecker:
+    """Stateless security checker that calls the AgentGuard core engine."""
 
     def __init__(
         self,
@@ -50,7 +50,7 @@ class AgentShieldChecker:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "agentshield-autogpt/0.1.0",
+                "User-Agent": "agentguard-autogpt/0.1.0",
             },
             timeout=timeout,
         )
@@ -71,7 +71,7 @@ class AgentShieldChecker:
         return self._session_id
 
     def check(self, tool_name: str, params: dict[str, Any]) -> dict[str, Any]:
-        """Check a tool/block call against AgentShield policy."""
+        """Check a tool/block call against AgentGuard policy."""
         try:
             resp = self._client.post("/api/v1/check", json={
                 "session_id": self._ensure_session(),
@@ -83,7 +83,7 @@ class AgentShieldChecker:
             return resp.json()
         except Exception as e:
             if self._fail_open:
-                logger.warning("AgentShield check failed (%s), allowing", e)
+                logger.warning("AgentGuard check failed (%s), allowing", e)
                 return {"action": "ALLOW"}
             raise
 
@@ -96,23 +96,23 @@ try:
     from backend.blocks._base import Block, BlockCategory, BlockOutput
     from backend.data.model import SchemaField
 
-    class AgentShieldBlockInput:
-        """Input schema for the AgentShield security check block."""
+    class AgentGuardBlockInput:
+        """Input schema for the AgentGuard security check block."""
         tool_name: str = SchemaField(description="Name of the tool/action to check")
         tool_params: dict = SchemaField(description="Parameters being passed to the tool", default={})
-        api_key: str = SchemaField(description="AgentShield API key")
-        core_url: str = SchemaField(description="AgentShield core engine URL", default="http://localhost:8000")
+        api_key: str = SchemaField(description="AgentGuard API key")
+        core_url: str = SchemaField(description="AgentGuard core engine URL", default="http://localhost:8000")
         passthrough_data: Any = SchemaField(description="Data to pass through if allowed", default=None)
 
-    class AgentShieldBlockOutput:
-        """Output schema for the AgentShield security check block."""
+    class AgentGuardBlockOutput:
+        """Output schema for the AgentGuard security check block."""
         allowed_data: Any = SchemaField(description="Passthrough data (only on ALLOW)")
         blocked_reason: str = SchemaField(description="Block reason (only on BLOCK)")
         decision: str = SchemaField(description="ALLOW, BLOCK, or REQUIRE_CONFIRMATION")
-        trace_id: str = SchemaField(description="AgentShield trace ID for audit")
+        trace_id: str = SchemaField(description="AgentGuard trace ID for audit")
 
-    class AgentShieldBlock(Block):
-        """Check a tool call against AgentShield security policy.
+    class AgentGuardBlock(Block):
+        """Check a tool call against AgentGuard security policy.
 
         Place this block before any sensitive block in your graph.
         Connect the 'allowed_data' output to the sensitive block's input,
@@ -122,14 +122,14 @@ try:
         def __init__(self):
             super().__init__(
                 id="d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f80",
-                description="AgentShield Security Check — validates tool calls against security policy before execution",
+                description="AgentGuard Security Check — validates tool calls against security policy before execution",
                 categories={BlockCategory.SAFETY},
-                input_schema=AgentShieldBlockInput,
-                output_schema=AgentShieldBlockOutput,
+                input_schema=AgentGuardBlockInput,
+                output_schema=AgentGuardBlockOutput,
             )
 
-        async def run(self, input_data: AgentShieldBlockInput, **kwargs) -> BlockOutput:
-            checker = AgentShieldChecker(
+        async def run(self, input_data: AgentGuardBlockInput, **kwargs) -> BlockOutput:
+            checker = AgentGuardChecker(
                 api_key=input_data.api_key,
                 core_url=input_data.core_url,
             )
@@ -149,10 +149,10 @@ try:
                 yield "allowed_data", None
                 yield "blocked_reason", reason
                 logger.warning(
-                    "AgentShield %s: tool=%s reason=%s trace=%s",
+                    "AgentGuard %s: tool=%s reason=%s trace=%s",
                     action, input_data.tool_name, reason, trace_id,
                 )
 
 except ImportError:
-    # Not running inside AutoGPT Platform — AgentShieldChecker is still usable standalone
+    # Not running inside AutoGPT Platform — AgentGuardChecker is still usable standalone
     pass

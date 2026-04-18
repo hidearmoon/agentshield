@@ -4,7 +4,7 @@ labels: ["integration"]
 body:
   - type: markdown
     attributes:
-      value: Request AgentShield support for a new agent framework, orchestrator, or tool platform.
+      value: Request AgentGuard support for a new agent framework, orchestrator, or tool platform.
   - type: input
     id: platform
     attributes:
@@ -21,7 +21,7 @@ body:
     id: integration_point
     attributes:
       label: Integration Point
-      description: Where in the platform's architecture could AgentShield intercept tool calls?
+      description: Where in the platform's architecture could AgentGuard intercept tool calls?
       placeholder: "e.g., The platform has a tool execution hook at..."
   - type: textarea
     id: use_case

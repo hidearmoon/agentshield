@@ -8,14 +8,14 @@ from pathlib import Path
 
 import pytest
 
-from agentshield_core.auth.oauth import (
+from agentguard_core.auth.oauth import (
     create_access_token,
     verify_access_token,
     _cleanup_expired_states,
     _oauth_states,
     _MAX_OAUTH_STATES,
 )
-from agentshield_core.auth.api_key import hash_api_key
+from agentguard_core.auth.api_key import hash_api_key
 
 
 class TestJWT:
@@ -25,11 +25,11 @@ class TestJWT:
         assert payload["sub"] == "user-1"
         assert payload["email"] == "test@example.com"
         assert payload["role"] == "admin"
-        assert payload["iss"] == "agentshield"
+        assert payload["iss"] == "agentguard"
 
     def test_expired_token_rejected(self):
         from jose import jwt as jose_jwt
-        from agentshield_core.auth.oauth import JWT_SECRET, JWT_ALGORITHM
+        from agentguard_core.auth.oauth import JWT_SECRET, JWT_ALGORITHM
 
         payload = {
             "sub": "user-1",
@@ -37,7 +37,7 @@ class TestJWT:
             "role": "viewer",
             "iat": int(time.time()) - 200000,
             "exp": int(time.time()) - 100000,  # Expired
-            "iss": "agentshield",
+            "iss": "agentguard",
         }
         token = jose_jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -107,7 +107,7 @@ class TestAPIKey:
 
     @pytest.mark.asyncio
     async def test_validate_missing_key_raises(self):
-        from agentshield_core.auth.api_key import validate_api_key
+        from agentguard_core.auth.api_key import validate_api_key
         from fastapi import HTTPException
 
         with pytest.raises(HTTPException) as exc_info:
@@ -116,7 +116,7 @@ class TestAPIKey:
 
     @pytest.mark.asyncio
     async def test_validate_valid_key_returns_prefix(self):
-        from agentshield_core.auth.api_key import validate_api_key
+        from agentguard_core.auth.api_key import validate_api_key
 
         result = await validate_api_key(api_key="sk-test-key-12345678")
         assert result == "sk-test-"
@@ -126,7 +126,7 @@ class TestMTLS:
     def test_generate_self_signed_certs(self):
         """Test certificate generation for development."""
         try:
-            from agentshield_core.auth.mtls import generate_self_signed_certs
+            from agentguard_core.auth.mtls import generate_self_signed_certs
         except ImportError:
             pytest.skip("cryptography not installed")
 
@@ -147,7 +147,7 @@ class TestMTLS:
     def test_create_server_ssl_context(self):
         """Test server SSL context creation."""
         try:
-            from agentshield_core.auth.mtls import (
+            from agentguard_core.auth.mtls import (
                 generate_self_signed_certs,
                 create_server_ssl_context,
             )
@@ -169,7 +169,7 @@ class TestMTLS:
     def test_create_client_ssl_context(self):
         """Test client SSL context creation."""
         try:
-            from agentshield_core.auth.mtls import (
+            from agentguard_core.auth.mtls import (
                 generate_self_signed_certs,
                 create_client_ssl_context,
             )

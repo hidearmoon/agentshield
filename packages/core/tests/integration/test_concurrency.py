@@ -8,15 +8,15 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):
@@ -46,7 +46,7 @@ def pipeline():
 
 class TestConcurrentAccess:
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_concurrent_sessions_dont_interfere(self, mock_insert, pipeline):
         """50 concurrent sessions should not interfere with each other."""
         sessions = []
@@ -75,7 +75,7 @@ class TestConcurrentAccess:
                 assert result.action == "BLOCK", f"Session {i} delete_all should be BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_concurrent_checks_same_session(self, mock_insert, pipeline):
         """Multiple concurrent checks on the same session should all work."""
         sid, _ = await pipeline.create_session("multi-check", agent_id="agent-1")
@@ -102,7 +102,7 @@ class TestConcurrentAccess:
         assert results[3].action == "BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_session_creation_under_load(self, mock_insert, pipeline):
         """Creating many sessions concurrently should not crash."""
         tasks = [pipeline.create_session(f"session {i}", agent_id=f"agent-{i}") for i in range(100)]

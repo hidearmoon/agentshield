@@ -1,8 +1,8 @@
 """Tests for Dynamic Permission Engine."""
 
 import pytest
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
 
 
 class TestDynamicPermissions:

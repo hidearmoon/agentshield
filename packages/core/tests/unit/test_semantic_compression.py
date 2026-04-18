@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from agentshield_core.engine.sanitization.semantic_compression import SemanticCompressionStage
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.sanitization.semantic_compression import SemanticCompressionStage
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockSummaryLLM(LLMClient):

@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Propose a new security rule or contribute attack samples.
-        See [builtin_rules.yaml](https://github.com/hidearmoon/agentshield/blob/main/configs/builtin_rules.yaml) for existing rules.
+        See [builtin_rules.yaml](https://github.com/hidearmoon/agentguard/blob/main/configs/builtin_rules.yaml) for existing rules.
   - type: textarea
     id: attack
     attributes:
@@ -19,7 +19,7 @@ body:
     id: rule
     attributes:
       label: Proposed Rule
-      description: How should AgentShield detect this? Include a YAML rule definition if possible.
+      description: How should AgentGuard detect this? Include a YAML rule definition if possible.
       render: yaml
       placeholder: |
         - name: my_rule

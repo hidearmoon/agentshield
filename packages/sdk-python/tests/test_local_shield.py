@@ -2,8 +2,8 @@
 
 import pytest
 
-from agentshield import LocalShield, ToolCallBlocked, ConfirmationRejected
-from agentshield.models import Decision
+from agentguard import LocalShield, ToolCallBlocked, ConfirmationRejected
+from agentguard.models import Decision
 
 
 class TestBasicChecks:
@@ -223,7 +223,7 @@ class TestAuditLog:
 
 class TestCustomRules:
     def test_add_custom_rule(self):
-        from agentshield.local import LocalRule
+        from agentguard.local import LocalRule
 
         shield = LocalShield()
         shield.add_rule(LocalRule(

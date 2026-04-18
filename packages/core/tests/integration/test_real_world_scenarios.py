@@ -2,7 +2,7 @@
 
 These tests verify the complete user journey from a product perspective:
 an AI agent receives external data, processes it, and attempts actions.
-AgentShield should protect against prompt injection while allowing
+AgentGuard should protect against prompt injection while allowing
 legitimate operations.
 """
 
@@ -13,18 +13,18 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.pipeline import Pipeline
-from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentshield_core.engine.trust.levels import TrustLevel
-from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-from agentshield_core.engine.intent.rule_engine import RuleEngine
-from agentshield_core.engine.intent.anomaly import AnomalyDetector
-from agentshield_core.engine.intent.semantic import SemanticChecker
-from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.engine.sanitization.format_cleansing import FormatCleansingStage
-from agentshield_core.engine.sanitization.pipeline import DataSanitizationPipeline
-from agentshield_core.llm.client import LLMClient, LLMResponse
+from agentguard_core.engine.pipeline import Pipeline
+from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+from agentguard_core.engine.trust.levels import TrustLevel
+from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+from agentguard_core.engine.intent.rule_engine import RuleEngine
+from agentguard_core.engine.intent.anomaly import AnomalyDetector
+from agentguard_core.engine.intent.semantic import SemanticChecker
+from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
+from agentguard_core.engine.sanitization.pipeline import DataSanitizationPipeline
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 class MockLLM(LLMClient):
@@ -70,7 +70,7 @@ class TestEmailAgentScenario:
     """Scenario: AI agent reads and processes external emails."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_legitimate_email_workflow(self, mock_insert, pipeline):
         """Normal email processing should work: read → summarize → draft reply."""
         session_id, trace_id = await pipeline.create_session(
@@ -97,7 +97,7 @@ class TestEmailAgentScenario:
         assert r2.action == "ALLOW"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_injection_via_email_body(self, mock_insert, pipeline):
         """Malicious email trying to make the agent send data to attacker."""
         session_id, _ = await pipeline.create_session(
@@ -116,7 +116,7 @@ class TestEmailAgentScenario:
         assert r.action == "BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_injection_via_hidden_html_in_email(self, mock_insert, pipeline, sanitizer):
         """Email with hidden HTML injection should be sanitized."""
         raw_email = (
@@ -134,7 +134,7 @@ class TestEmailAgentScenario:
         assert sanitized.trust_level == TrustLevel.EXTERNAL
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_code_execution_from_email_blocked(self, mock_insert, pipeline):
         """Agent trying to execute code based on email content should be blocked."""
         session_id, _ = await pipeline.create_session(
@@ -155,7 +155,7 @@ class TestRAGAgentScenario:
     """Scenario: AI agent using RAG with external documents."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_rag_retrieval_allowed(self, mock_insert, pipeline):
         """Reading from RAG should be allowed."""
         session_id, _ = await pipeline.create_session(
@@ -172,7 +172,7 @@ class TestRAGAgentScenario:
         assert r.action == "ALLOW"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_rag_injection_data_exfil_blocked(self, mock_insert, pipeline):
         """RAG document with injection trying to export data should be blocked."""
         session_id, _ = await pipeline.create_session(
@@ -194,7 +194,7 @@ class TestMultiAgentScenario:
     """Scenario: Agent-to-agent delegation."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_agent_delegation_trust_downgrade(self, mock_insert, pipeline):
         """Data from other agents should be INTERNAL, not TRUSTED."""
         session_id, _ = await pipeline.create_session(
@@ -227,7 +227,7 @@ class TestFinancialAgentScenario:
     """Scenario: Agent processing financial operations."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_payment_requires_confirmation(self, mock_insert, pipeline):
         """Financial operations should require confirmation."""
         session_id, _ = await pipeline.create_session(
@@ -244,7 +244,7 @@ class TestFinancialAgentScenario:
         assert r.action == "REQUIRE_CONFIRMATION"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_data_destruction_always_blocked(self, mock_insert, pipeline):
         """delete_all should always be blocked regardless of trust level."""
         session_id, _ = await pipeline.create_session(
@@ -266,7 +266,7 @@ class TestTraceIntegrity:
     """Verify that traces are correctly recorded for all decisions."""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_blocked_calls_leave_trace(self, mock_insert, pipeline):
         """Even blocked calls should be recorded in the trace."""
         session_id, trace_id = await pipeline.create_session(
@@ -287,7 +287,7 @@ class TestTraceIntegrity:
         assert trace.spans[0].decision == "BLOCK"
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_full_workflow_trace(self, mock_insert, pipeline):
         """A multi-step workflow should produce a complete trace."""
         session_id, trace_id = await pipeline.create_session(
@@ -308,6 +308,6 @@ class TestTraceIntegrity:
         assert len(trace.spans) == 3
         assert all(s.decision == "ALLOW" for s in trace.spans)
         # Merkle chain should be valid
-        from agentshield_core.engine.trace.merkle import MerkleChain
+        from agentguard_core.engine.trace.merkle import MerkleChain
 
         assert MerkleChain.verify_chain(trace.spans)

@@ -7,9 +7,9 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentshield_core.engine.trace.engine import TraceEngine
-from agentshield_core.engine.trace.models import TraceSpan
-from agentshield_core.engine.trace.merkle import MerkleChain
+from agentguard_core.engine.trace.engine import TraceEngine
+from agentguard_core.engine.trace.models import TraceSpan
+from agentguard_core.engine.trace.merkle import MerkleChain
 
 
 class TestTraceEngine:
@@ -29,7 +29,7 @@ class TestTraceEngine:
         assert engine.get_trace("nonexistent") is None
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_record_span_adds_to_trace(self, mock_insert, engine):
         trace_id = engine.create_trace("s1", "Test")
         span = TraceSpan(
@@ -58,7 +58,7 @@ class TestTraceEngine:
         assert trace.spans[0].merkle_hash != ""  # Hash was computed
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_record_span_computes_merkle_hash(self, mock_insert, engine):
         trace_id = engine.create_trace("s1", "Test")
         span1 = TraceSpan(
@@ -107,7 +107,7 @@ class TestTraceEngine:
         assert MerkleChain.verify_chain(trace.spans)
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_record_span_persists_to_clickhouse(self, mock_insert, engine):
         trace_id = engine.create_trace("s1", "Test")
         span = TraceSpan(
@@ -165,7 +165,7 @@ class TestTraceEngine:
         assert ctx["original_intent"] == ""
 
     @pytest.mark.asyncio
-    @patch("agentshield_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
+    @patch("agentguard_core.storage.clickhouse.insert_span", new_callable=AsyncMock)
     async def test_record_span_creates_chain_for_unknown_trace(self, mock_insert, engine):
         """Recording a span for an unknown trace should auto-create the chain."""
         span = TraceSpan(

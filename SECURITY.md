@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in AgentShield, please report it responsibly.
+If you discover a security vulnerability in AgentGuard, please report it responsibly.
 
 **Do NOT open a public GitHub issue for security vulnerabilities.**
 
@@ -31,7 +31,7 @@ The following are in scope for security reports:
 
 ## Security Testing
 
-AgentShield includes a dedicated security test suite (`packages/core/tests/security/`) with 92 tests covering:
+AgentGuard includes a dedicated security test suite (`packages/core/tests/security/`) with 92 tests covering:
 
 - Direct and indirect prompt injection
 - Encoding-based bypass (Unicode, base64, URL encoding, HTML entities)

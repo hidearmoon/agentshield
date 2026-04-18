@@ -9,7 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 
-from agentshield_core.auth.oauth import (
+from agentguard_core.auth.oauth import (
     router,
     _oauth_states,
     create_access_token,
@@ -31,7 +31,7 @@ def client(app):
 
 class TestOAuthLogin:
     def test_login_redirects_when_configured(self, client):
-        with patch("agentshield_core.auth.oauth._get_oauth_config") as mock_config:
+        with patch("agentguard_core.auth.oauth._get_oauth_config") as mock_config:
             mock_config.return_value = MagicMock(
                 authorization_url="https://idp.example.com/authorize",
                 client_id="test-client-id",
@@ -46,7 +46,7 @@ class TestOAuthLogin:
             assert "state=" in location
 
     def test_login_fails_when_not_configured(self, client):
-        with patch("agentshield_core.auth.oauth._get_oauth_config") as mock_config:
+        with patch("agentguard_core.auth.oauth._get_oauth_config") as mock_config:
             mock_config.return_value = MagicMock(authorization_url="")
             resp = client.get("/auth/login")
             assert resp.status_code == 501
@@ -70,8 +70,8 @@ class TestOAuthCallback:
         _oauth_states[state] = time.time()
 
         with (
-            patch("agentshield_core.auth.oauth._get_oauth_config") as mock_config,
-            patch("agentshield_core.auth.oauth.httpx.AsyncClient") as mock_http,
+            patch("agentguard_core.auth.oauth._get_oauth_config") as mock_config,
+            patch("agentguard_core.auth.oauth.httpx.AsyncClient") as mock_http,
         ):
             mock_config.return_value = MagicMock(
                 token_url="https://idp.example.com/token",
@@ -114,8 +114,8 @@ class TestOAuthCallback:
         _oauth_states[state] = time.time()
 
         with (
-            patch("agentshield_core.auth.oauth._get_oauth_config") as mock_config,
-            patch("agentshield_core.auth.oauth.httpx.AsyncClient") as mock_http,
+            patch("agentguard_core.auth.oauth._get_oauth_config") as mock_config,
+            patch("agentguard_core.auth.oauth.httpx.AsyncClient") as mock_http,
         ):
             mock_config.return_value = MagicMock(
                 token_url="https://idp.example.com/token",
@@ -179,7 +179,7 @@ class TestTokenRefresh:
 
     def test_refresh_rejects_very_old_token(self, client):
         from jose import jwt as jose_jwt
-        from agentshield_core.auth.oauth import JWT_SECRET, JWT_ALGORITHM
+        from agentguard_core.auth.oauth import JWT_SECRET, JWT_ALGORITHM
 
         old_payload = {
             "sub": "user-1",

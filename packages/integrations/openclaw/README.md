@@ -1,4 +1,4 @@
-# AgentShield Plugin for OpenClaw
+# AgentGuard Plugin for OpenClaw
 
 Runtime security layer for [OpenClaw](https://openclaw.ai) — inspects every tool call before execution.
 
@@ -14,7 +14,7 @@ The plugin registers three hooks in OpenClaw's agent loop:
 
 ## Setup
 
-1. Start the AgentShield core engine:
+1. Start the AgentGuard core engine:
    ```bash
    docker compose -f docker/docker-compose.yml up -d
    ```
@@ -25,12 +25,12 @@ The plugin registers three hooks in OpenClaw's agent loop:
    ```json
    {
      "plugins": {
-       "enabled": ["agentshield"],
+       "enabled": ["agentguard"],
        "entries": {
-         "agentshield": {
+         "agentguard": {
            "config": {
              "coreUrl": "http://localhost:8000",
-             "apiKey": "your-agentshield-api-key"
+             "apiKey": "your-agentguard-api-key"
            }
          }
        }
@@ -40,7 +40,7 @@ The plugin registers three hooks in OpenClaw's agent loop:
 
 ## Trust Level Mapping
 
-OpenClaw channels are automatically mapped to AgentShield trust levels:
+OpenClaw channels are automatically mapped to AgentGuard trust levels:
 
 | Channel | Trust Level | Rationale |
 |---------|-------------|-----------|
@@ -54,4 +54,4 @@ Customize via the `trustMapping` config option.
 
 ## Fail-Open Design
 
-If the AgentShield core engine is unreachable, the plugin **allows** the tool call to proceed and logs a warning. Security checks are additive — they should never break your agent when the security service is temporarily unavailable.
+If the AgentGuard core engine is unreachable, the plugin **allows** the tool call to proceed and logs a warning. Security checks are additive — they should never break your agent when the security service is temporarily unavailable.

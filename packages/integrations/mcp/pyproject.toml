@@ -1,12 +1,12 @@
 [project]
-name = "agentshield-mcp"
+name = "agentguard-mcp"
 version = "0.1.0"
-description = "AgentShield guard for MCP (Model Context Protocol) servers"
+description = "AgentGuard guard for MCP (Model Context Protocol) servers"
 requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 dependencies = [
     "mcp>=1.0",
-    "agentshield>=0.1",
+    "agentguard>=0.1",
 ]
 
 [project.optional-dependencies]

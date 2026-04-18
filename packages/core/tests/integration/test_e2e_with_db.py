@@ -19,16 +19,16 @@ import os
 
 import pytest
 
-CH_PORT = os.environ.get("AGENTSHIELD_CLICKHOUSE_PORT", "8125")
+CH_PORT = os.environ.get("AGENTGUARD_CLICKHOUSE_PORT", "8125")
 PG_URL = os.environ.get(
-    "AGENTSHIELD_DATABASE_URL",
-    "postgresql+asyncpg://agentshield:test-password@localhost:5433/agentshield_test",
+    "AGENTGUARD_DATABASE_URL",
+    "postgresql+asyncpg://agentguard:test-password@localhost:5433/agentguard_test",
 )
 
 try:
     import clickhouse_connect
 
-    _ch = clickhouse_connect.get_client(host="localhost", port=int(CH_PORT), database="agentshield")
+    _ch = clickhouse_connect.get_client(host="localhost", port=int(CH_PORT), database="agentguard")
     _ch.command("SELECT 1")
     DB_AVAILABLE = True
 except Exception:
@@ -39,9 +39,9 @@ pytestmark = pytest.mark.skipif(not DB_AVAILABLE, reason="Databases not availabl
 
 @pytest.fixture(autouse=True)
 def set_env(monkeypatch):
-    monkeypatch.setenv("AGENTSHIELD_CLICKHOUSE_PORT", CH_PORT)
-    monkeypatch.setenv("AGENTSHIELD_DATABASE_URL", PG_URL)
-    from agentshield_core.config import settings
+    monkeypatch.setenv("AGENTGUARD_CLICKHOUSE_PORT", CH_PORT)
+    monkeypatch.setenv("AGENTGUARD_DATABASE_URL", PG_URL)
+    from agentguard_core.config import settings
 
     monkeypatch.setattr(settings, "clickhouse_port", int(CH_PORT))
 
@@ -50,21 +50,21 @@ class TestEndToEndWithDB:
     @pytest.mark.asyncio
     async def test_full_pipeline_with_real_storage(self):
         """Complete flow: session → check → trace stored → Merkle valid."""
-        from agentshield_core.engine.pipeline import Pipeline
-        from agentshield_core.engine.trust.marker import TrustMarker, TrustPolicy
-        from agentshield_core.engine.intent.engine import IntentConsistencyEngine
-        from agentshield_core.engine.intent.rule_engine import RuleEngine
-        from agentshield_core.engine.intent.anomaly import AnomalyDetector
-        from agentshield_core.engine.intent.semantic import SemanticChecker
-        from agentshield_core.engine.permissions.dynamic import DynamicPermissionEngine
-        from agentshield_core.engine.trace.engine import TraceEngine
-        from agentshield_core.engine.trace.merkle import MerkleChain
-        from agentshield_core.storage.clickhouse import (
+        from agentguard_core.engine.pipeline import Pipeline
+        from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
+        from agentguard_core.engine.intent.engine import IntentConsistencyEngine
+        from agentguard_core.engine.intent.rule_engine import RuleEngine
+        from agentguard_core.engine.intent.anomaly import AnomalyDetector
+        from agentguard_core.engine.intent.semantic import SemanticChecker
+        from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
+        from agentguard_core.engine.trace.engine import TraceEngine
+        from agentguard_core.engine.trace.merkle import MerkleChain
+        from agentguard_core.storage.clickhouse import (
             init_clickhouse,
             close_clickhouse,
             query_spans_by_trace,
         )
-        from agentshield_core.llm.client import LLMClient, LLMResponse
+        from agentguard_core.llm.client import LLMClient, LLMResponse
 
         class MockLLM(LLMClient):
             async def chat(self, messages, tools=None, temperature=0.0, max_tokens=4096):

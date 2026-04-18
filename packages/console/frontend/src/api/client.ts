@@ -1,7 +1,7 @@
 const BASE_URL = "/api/console/v1";
 
 function getAuthHeaders(): Record<string, string> {
-  const token = localStorage.getItem("agentshield_token");
+  const token = localStorage.getItem("agentguard_token");
   if (!token) return {};
   return { Authorization: `Bearer ${token}` };
 }

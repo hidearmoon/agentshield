@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git remote *)",
+      "Bash(rm -rf .git/refs/original/)"
+    ]
+  }
+}

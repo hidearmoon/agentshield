@@ -13,12 +13,12 @@ from datetime import datetime, timezone, timedelta
 import pytest
 
 # Skip entire module if CH is not available
-CH_PORT = os.environ.get("AGENTSHIELD_CLICKHOUSE_PORT", "8125")
+CH_PORT = os.environ.get("AGENTGUARD_CLICKHOUSE_PORT", "8125")
 
 try:
     import clickhouse_connect
 
-    _client = clickhouse_connect.get_client(host="localhost", port=int(CH_PORT), database="agentshield")
+    _client = clickhouse_connect.get_client(host="localhost", port=int(CH_PORT), database="agentguard")
     _client.command("SELECT 1")
     CH_AVAILABLE = True
 except Exception:
@@ -29,9 +29,9 @@ pytestmark = pytest.mark.skipif(not CH_AVAILABLE, reason="ClickHouse not availab
 
 @pytest.fixture(autouse=True)
 def set_ch_port(monkeypatch):
-    monkeypatch.setenv("AGENTSHIELD_CLICKHOUSE_PORT", CH_PORT)
+    monkeypatch.setenv("AGENTGUARD_CLICKHOUSE_PORT", CH_PORT)
     # Also patch the settings object directly since it's already loaded
-    from agentshield_core.config import settings
+    from agentguard_core.config import settings
 
     monkeypatch.setattr(settings, "clickhouse_port", int(CH_PORT))
 
@@ -39,7 +39,7 @@ def set_ch_port(monkeypatch):
 @pytest.fixture
 async def ch_client():
     """Initialize and yield the async ClickHouse client."""
-    from agentshield_core.storage import clickhouse as ch
+    from agentguard_core.storage import clickhouse as ch
 
     await ch.init_clickhouse()
     yield ch
