@@ -207,6 +207,14 @@ BUILTIN_LOCAL_RULES: list[LocalRule] = [
         action=Decision.BLOCK,
         reason="Cross-system data transfer blocked in external context",
     ),
+    # --- Pattern-based injection detection (runs before CONFIRM rules) ---
+    LocalRule(
+        name="detect_injection_in_params",
+        description="Detect common prompt injection patterns in tool parameters",
+        check=lambda tc, ctx: _has_injection_pattern(tc.params),
+        action=Decision.BLOCK,
+        reason="Potential prompt injection detected in tool parameters",
+    ),
     # --- REQUIRE_CONFIRMATION rules ---
     LocalRule(
         name="confirm_permissions",
@@ -232,14 +240,6 @@ BUILTIN_LOCAL_RULES: list[LocalRule] = [
         ),
         action=Decision.REQUIRE_CONFIRMATION,
         reason="External email recipient requires confirmation",
-    ),
-    # --- Pattern-based injection detection ---
-    LocalRule(
-        name="detect_injection_in_params",
-        description="Detect common prompt injection patterns in tool parameters",
-        check=lambda tc, ctx: _has_injection_pattern(tc.params),
-        action=Decision.BLOCK,
-        reason="Potential prompt injection detected in tool parameters",
     ),
 ]
 
