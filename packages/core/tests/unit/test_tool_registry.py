@@ -1,6 +1,5 @@
 """Tests for MCP tool supply chain verifier."""
 
-
 import pytest
 
 from agentguard_core.engine.tool_registry.verifier import (
@@ -40,10 +39,12 @@ class TestToolRegistration:
 
     def test_register_from_mcp_listing(self, strict_verifier):
         tools = [
-            {"name": "read_file", "description": "Read a file",
-             "inputSchema": {"path": {"type": "string"}}},
-            {"name": "write_file", "description": "Write a file",
-             "inputSchema": {"path": {"type": "string"}, "content": {"type": "string"}}},
+            {"name": "read_file", "description": "Read a file", "inputSchema": {"path": {"type": "string"}}},
+            {
+                "name": "write_file",
+                "description": "Write a file",
+                "inputSchema": {"path": {"type": "string"}, "content": {"type": "string"}},
+            },
         ]
         manifests = strict_verifier.register_from_mcp_listing(tools, provider="mcp://fs")
         assert len(manifests) == 2
@@ -127,7 +128,10 @@ class TestVerification:
 class TestTrustLevelEnforcement:
     def test_tool_allowed_at_configured_trust(self, strict_verifier):
         strict_verifier.register_tool(
-            "read_db", "mcp", "desc", {},
+            "read_db",
+            "mcp",
+            "desc",
+            {},
             allowed_trust_levels=["TRUSTED", "VERIFIED"],
         )
         assert strict_verifier.verify_trust_level("read_db", "mcp", "VERIFIED") is True

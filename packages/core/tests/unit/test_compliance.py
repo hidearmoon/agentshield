@@ -55,28 +55,42 @@ def populated_generator():
         reason="Reviewed and approved",
     )
     # Risk assessment
-    gen.add_risk_assessment(RiskAssessmentRecord(
-        risk_level=RiskLevel.HIGH.value,
-        system_description="AI agent email processing pipeline",
-        intended_purpose="Automate email summarization and draft replies",
-        known_risks=["prompt injection via email body", "data exfiltration"],
-        mitigation_measures=["trust-aware data flow", "intent consistency detection", "two-phase call architecture"],
-        residual_risks=["novel zero-day injection techniques"],
-        testing_methodology="92 security tests including fuzz testing",
-        test_results_summary="All 342 tests passing, 85%+ coverage",
-    ))
+    gen.add_risk_assessment(
+        RiskAssessmentRecord(
+            risk_level=RiskLevel.HIGH.value,
+            system_description="AI agent email processing pipeline",
+            intended_purpose="Automate email summarization and draft replies",
+            known_risks=["prompt injection via email body", "data exfiltration"],
+            mitigation_measures=[
+                "trust-aware data flow",
+                "intent consistency detection",
+                "two-phase call architecture",
+            ],
+            residual_risks=["novel zero-day injection techniques"],
+            testing_methodology="92 security tests including fuzz testing",
+            test_results_summary="All 342 tests passing, 85%+ coverage",
+        )
+    )
     return gen
 
 
 class TestRecordCollection:
     def test_record_decision(self, generator):
         entry = generator.record_decision(
-            session_id="s1", agent_id="a1", tool_name="tool1",
-            tool_params_hash="h1", data_source="user_input",
-            trust_level="VERIFIED", decision="ALLOW",
-            decision_engine="rule", decision_reason="",
-            intent_drift_score=0.0, trace_id="t1", span_id="sp1",
-            merkle_hash="m1", latency_ms=2.0,
+            session_id="s1",
+            agent_id="a1",
+            tool_name="tool1",
+            tool_params_hash="h1",
+            data_source="user_input",
+            trust_level="VERIFIED",
+            decision="ALLOW",
+            decision_engine="rule",
+            decision_reason="",
+            intent_drift_score=0.0,
+            trace_id="t1",
+            span_id="sp1",
+            merkle_hash="m1",
+            latency_ms=2.0,
         )
         assert entry.entry_id
         assert entry.timestamp

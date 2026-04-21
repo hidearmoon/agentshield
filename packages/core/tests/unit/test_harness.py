@@ -12,6 +12,7 @@ from agentguard_core.llm.client import LLMClient, LLMResponse
 
 # ─── Mock tools ───
 
+
 async def safe_tool(text: str) -> str:
     """A safe read-only tool."""
     return f"processed: {text}"
@@ -28,6 +29,7 @@ async def delete_all(scope: str) -> str:
 
 
 # ─── Mock LLMs ───
+
 
 class AllowToolLLM(LLMClient):
     """LLM that calls a tool then gives final answer."""
@@ -78,6 +80,7 @@ class MultiToolLLM(LLMClient):
 
 
 # ─── Tests ───
+
 
 class TestHarnessBasic:
     @pytest.mark.asyncio

@@ -59,11 +59,14 @@ class AgentGuardChecker:
         if self._session_id:
             return self._session_id
         try:
-            resp = self._client.post("/api/v1/sessions", json={
-                "user_message": "",
-                "agent_id": self._agent_id,
-                "metadata": {"integration": "autogpt"},
-            })
+            resp = self._client.post(
+                "/api/v1/sessions",
+                json={
+                    "user_message": "",
+                    "agent_id": self._agent_id,
+                    "metadata": {"integration": "autogpt"},
+                },
+            )
             resp.raise_for_status()
             self._session_id = resp.json()["session_id"]
         except Exception:
@@ -73,12 +76,15 @@ class AgentGuardChecker:
     def check(self, tool_name: str, params: dict[str, Any]) -> dict[str, Any]:
         """Check a tool/block call against AgentGuard policy."""
         try:
-            resp = self._client.post("/api/v1/check", json={
-                "session_id": self._ensure_session(),
-                "tool_name": tool_name,
-                "params": params,
-                "source_id": "autogpt/block",
-            })
+            resp = self._client.post(
+                "/api/v1/check",
+                json={
+                    "session_id": self._ensure_session(),
+                    "tool_name": tool_name,
+                    "params": params,
+                    "source_id": "autogpt/block",
+                },
+            )
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
@@ -98,6 +104,7 @@ try:
 
     class AgentGuardBlockInput:
         """Input schema for the AgentGuard security check block."""
+
         tool_name: str = SchemaField(description="Name of the tool/action to check")
         tool_params: dict = SchemaField(description="Parameters being passed to the tool", default={})
         api_key: str = SchemaField(description="AgentGuard API key")
@@ -106,6 +113,7 @@ try:
 
     class AgentGuardBlockOutput:
         """Output schema for the AgentGuard security check block."""
+
         allowed_data: Any = SchemaField(description="Passthrough data (only on ALLOW)")
         blocked_reason: str = SchemaField(description="Block reason (only on BLOCK)")
         decision: str = SchemaField(description="ALLOW, BLOCK, or REQUIRE_CONFIRMATION")
@@ -150,7 +158,10 @@ try:
                 yield "blocked_reason", reason
                 logger.warning(
                     "AgentGuard %s: tool=%s reason=%s trace=%s",
-                    action, input_data.tool_name, reason, trace_id,
+                    action,
+                    input_data.tool_name,
+                    reason,
+                    trace_id,
                 )
 
 except ImportError:

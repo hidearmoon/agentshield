@@ -85,11 +85,14 @@ class MCPShield:
         if self._session_id:
             return self._session_id
         try:
-            resp = await self._client.post("/api/v1/sessions", json={
-                "user_message": "",
-                "agent_id": self._agent_id,
-                "metadata": {"integration": "mcp"},
-            })
+            resp = await self._client.post(
+                "/api/v1/sessions",
+                json={
+                    "user_message": "",
+                    "agent_id": self._agent_id,
+                    "metadata": {"integration": "mcp"},
+                },
+            )
             resp.raise_for_status()
             self._session_id = resp.json()["session_id"]
         except Exception:
@@ -101,12 +104,15 @@ class MCPShield:
         """Check a tool call against the AgentGuard policy engine."""
         session_id = await self._ensure_session()
         try:
-            resp = await self._client.post("/api/v1/check", json={
-                "session_id": session_id,
-                "tool_name": tool_name,
-                "params": params,
-                "source_id": "mcp/tool",
-            })
+            resp = await self._client.post(
+                "/api/v1/check",
+                json={
+                    "session_id": session_id,
+                    "tool_name": tool_name,
+                    "params": params,
+                    "source_id": "mcp/tool",
+                },
+            )
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
@@ -125,6 +131,7 @@ class MCPShield:
             async def my_tool(param: str) -> str:
                 ...
         """
+
         @functools.wraps(fn)
         async def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Extract tool name from function name
@@ -254,9 +261,7 @@ class MCPShieldProxy:
                                 "message": f"Blocked by AgentGuard: {result.get('reason', '')}",
                             },
                         }
-                        __import__("sys").stdout.buffer.write(
-                            (json.dumps(error_response) + "\n").encode()
-                        )
+                        __import__("sys").stdout.buffer.write((json.dumps(error_response) + "\n").encode())
                         __import__("sys").stdout.buffer.flush()
                         continue
 

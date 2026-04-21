@@ -219,9 +219,7 @@ class ToolRegistryVerifier:
         if current_desc_hash != manifest.description_hash:
             mismatches.append("description")
 
-        current_param_hash = self._hash_content(
-            json.dumps(current_parameter_schema, sort_keys=True)
-        )
+        current_param_hash = self._hash_content(json.dumps(current_parameter_schema, sort_keys=True))
         if current_param_hash != manifest.parameter_schema_hash:
             mismatches.append("parameter_schema")
 
@@ -230,7 +228,9 @@ class ToolRegistryVerifier:
             reason = f"Tool schema mismatch: {', '.join(mismatches)} changed since registration"
             logger.warning(
                 "TOOL TAMPERED: tool=%s provider=%s mismatches=%s",
-                name, provider, mismatches,
+                name,
+                provider,
+                mismatches,
             )
 
             if self._mode == VerificationMode.STRICT:

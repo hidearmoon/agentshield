@@ -76,15 +76,19 @@ def _ensure_session() -> str:
         return _session_id
 
     try:
-        resp = _client.post("/api/v1/sessions", json={
-            "user_message": "",
-            "agent_id": _config.get("agent_id", "dify"),
-            "metadata": {"integration": "dify"},
-        })
+        resp = _client.post(
+            "/api/v1/sessions",
+            json={
+                "user_message": "",
+                "agent_id": _config.get("agent_id", "dify"),
+                "metadata": {"integration": "dify"},
+            },
+        )
         resp.raise_for_status()
         _session_id = resp.json()["session_id"]
     except Exception:
         import uuid
+
         _session_id = str(uuid.uuid4())
     return _session_id
 
@@ -92,12 +96,15 @@ def _ensure_session() -> str:
 def _check_tool_call(tool_name: str, tool_provider: str, params: dict) -> dict:
     """Check a tool call against AgentGuard policy."""
     try:
-        resp = _client.post("/api/v1/check", json={
-            "session_id": _ensure_session(),
-            "tool_name": f"{tool_provider}/{tool_name}" if tool_provider else tool_name,
-            "params": params,
-            "source_id": "dify/tool",
-        })
+        resp = _client.post(
+            "/api/v1/check",
+            json={
+                "session_id": _ensure_session(),
+                "tool_name": f"{tool_provider}/{tool_name}" if tool_provider else tool_name,
+                "params": params,
+                "source_id": "dify/tool",
+            },
+        )
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
@@ -144,15 +151,17 @@ def _patch_tool_engine() -> None:
             trace_id = result.get("trace_id", "")
             logger.warning(
                 "AgentGuard BLOCKED: tool=%s/%s reason=%s trace=%s",
-                tool_provider, tool_name, reason, trace_id,
+                tool_provider,
+                tool_name,
+                reason,
+                trace_id,
             )
             # Yield a text message indicating the block
             from core.tools.entities.tool_entities import ToolInvokeMessage
+
             yield ToolInvokeMessage(
                 type=ToolInvokeMessage.MessageType.TEXT,
-                message=ToolInvokeMessage.TextMessage(
-                    text=f"[Security] Tool call blocked: {reason}"
-                ),
+                message=ToolInvokeMessage.TextMessage(text=f"[Security] Tool call blocked: {reason}"),
             )
             return
 
@@ -160,18 +169,15 @@ def _patch_tool_engine() -> None:
             reason = result.get("reason", "Requires confirmation")
             logger.info("AgentGuard CONFIRM: tool=%s/%s reason=%s", tool_provider, tool_name, reason)
             from core.tools.entities.tool_entities import ToolInvokeMessage
+
             yield ToolInvokeMessage(
                 type=ToolInvokeMessage.MessageType.TEXT,
-                message=ToolInvokeMessage.TextMessage(
-                    text=f"[Security] Confirmation required: {reason}"
-                ),
+                message=ToolInvokeMessage.TextMessage(text=f"[Security] Confirmation required: {reason}"),
             )
             return
 
         # ALLOW — proceed to original
-        yield from original_invoke(
-            tool, tool_parameters, user_id, conversation_id, app_id, message_id
-        )
+        yield from original_invoke(tool, tool_parameters, user_id, conversation_id, app_id, message_id)
 
     ToolEngine._invoke = guarded_invoke
     logger.info("ToolEngine._invoke patched with AgentGuard guard")

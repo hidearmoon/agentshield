@@ -26,6 +26,7 @@ from typing import Any
 
 class RiskLevel(Enum):
     """EU AI Act risk classification."""
+
     UNACCEPTABLE = "unacceptable"
     HIGH = "high"
     LIMITED = "limited"
@@ -42,6 +43,7 @@ class DecisionOutcome(Enum):
 @dataclass
 class HumanOversightEvent:
     """Article 14: Record of human oversight intervention."""
+
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     intervention_type: str = ""  # "override", "stop", "approve", "reject", "review"
@@ -56,6 +58,7 @@ class HumanOversightEvent:
 @dataclass
 class AuditLogEntry:
     """Article 12: Automatic logging record."""
+
     entry_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     event_type: str = ""  # "tool_call_check", "session_start", "policy_change", "anomaly", "error"
@@ -82,6 +85,7 @@ class AuditLogEntry:
 @dataclass
 class RiskAssessmentRecord:
     """Article 9: Risk management record."""
+
     assessment_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     risk_level: str = RiskLevel.HIGH.value
@@ -214,10 +218,7 @@ class ComplianceReportGenerator:
         blocked = sum(1 for entry in logs if entry.decision == "BLOCK")
         confirmations = sum(1 for entry in logs if entry.decision == "REQUIRE_CONFIRMATION")
         allowed = sum(1 for entry in logs if entry.decision == "ALLOW")
-        avg_drift = (
-            sum(entry.intent_drift_score for entry in logs) / total_decisions
-            if total_decisions > 0 else 0.0
-        )
+        avg_drift = sum(entry.intent_drift_score for entry in logs) / total_decisions if total_decisions > 0 else 0.0
         engines_used: dict[str, int] = {}
         for entry in logs:
             engines_used[entry.decision_engine] = engines_used.get(entry.decision_engine, 0) + 1
@@ -273,7 +274,8 @@ class ComplianceReportGenerator:
                 "intervention_types": _count_by_field(oversight, "intervention_type"),
                 "override_rate": (
                     sum(1 for evt in oversight if evt.intervention_type == "override") / len(oversight)
-                    if oversight else 0.0
+                    if oversight
+                    else 0.0
                 ),
                 "events": [asdict(evt) for evt in oversight],
                 "capabilities": {

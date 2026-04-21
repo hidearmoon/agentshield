@@ -92,52 +92,94 @@ def _is_untrusted(ctx: RuleContext) -> bool:
 
 
 SEND_TOOLS = {
-    "send_email", "send_message", "post_message", "send_notification",
-    "send_sms", "publish", "send_webhook",
+    "send_email",
+    "send_message",
+    "post_message",
+    "send_notification",
+    "send_sms",
+    "publish",
+    "send_webhook",
 }
 
 CODE_EXEC_TOOLS = {
-    "execute_code", "run_script", "eval", "exec_command", "run_shell",
-    "exec", "spawn", "shell",
+    "execute_code",
+    "run_script",
+    "eval",
+    "exec_command",
+    "run_shell",
+    "exec",
+    "spawn",
+    "shell",
 }
 
 FS_WRITE_TOOLS = {
-    "write_file", "create_file", "delete_file", "modify_file",
-    "fs_write", "fs_delete",
+    "write_file",
+    "create_file",
+    "delete_file",
+    "modify_file",
+    "fs_write",
+    "fs_delete",
 }
 
 NETWORK_TOOLS = {
-    "http_request", "fetch_url", "call_api", "webhook_send",
+    "http_request",
+    "fetch_url",
+    "call_api",
+    "webhook_send",
     "call_external_api",
 }
 
 SECRET_TOOLS = {
-    "get_secret", "read_env", "get_api_key", "access_credentials",
-    "read_secrets", "get_token",
+    "get_secret",
+    "read_env",
+    "get_api_key",
+    "access_credentials",
+    "read_secrets",
+    "get_token",
 }
 
 DESTRUCTIVE_TOOLS = {
-    "delete_all", "purge_data", "wipe_storage", "factory_reset",
-    "destroy_resource", "terminate_instance", "drop_table",
-    "drop_database", "truncate_table",
+    "delete_all",
+    "purge_data",
+    "wipe_storage",
+    "factory_reset",
+    "destroy_resource",
+    "terminate_instance",
+    "drop_table",
+    "drop_database",
+    "truncate_table",
 }
 
 AUDIT_TOOLS = {
-    "delete_log", "modify_log", "clear_audit", "truncate_logs",
+    "delete_log",
+    "modify_log",
+    "clear_audit",
+    "truncate_logs",
 }
 
 PERMISSION_TOOLS = {
-    "modify_permissions", "grant_access", "revoke_access",
-    "change_role", "add_user", "delete_user",
+    "modify_permissions",
+    "grant_access",
+    "revoke_access",
+    "change_role",
+    "add_user",
+    "delete_user",
 }
 
 FINANCIAL_TOOLS = {
-    "process_payment", "transfer_funds", "issue_refund",
-    "modify_billing", "create_invoice", "authorize_payment",
+    "process_payment",
+    "transfer_funds",
+    "issue_refund",
+    "modify_billing",
+    "create_invoice",
+    "authorize_payment",
 }
 
 ESCALATION_TOOLS = {
-    "sudo", "run_as_admin", "elevate_privileges", "assume_role",
+    "sudo",
+    "run_as_admin",
+    "elevate_privileges",
+    "assume_role",
 }
 
 BUILTIN_LOCAL_RULES: list[LocalRule] = [
@@ -471,14 +513,16 @@ class LocalShield:
 
     def _record(self, tool_name: str, result: CheckResult) -> None:
         self._tool_history.append(tool_name)
-        self._decisions.append({
-            "timestamp": time.time(),
-            "tool": tool_name,
-            "action": result.action.value,
-            "reason": result.reason,
-            "trust_level": self._trust_level.name,
-            "trace_id": result.trace_id,
-        })
+        self._decisions.append(
+            {
+                "timestamp": time.time(),
+                "tool": tool_name,
+                "action": result.action.value,
+                "reason": result.reason,
+                "trust_level": self._trust_level.name,
+                "trace_id": result.trace_id,
+            }
+        )
 
     @property
     def audit_log(self) -> list[dict]:
