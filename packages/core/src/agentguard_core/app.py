@@ -42,11 +42,33 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    await init_db()
-    await init_clickhouse()
+    import logging
+
+    logger = logging.getLogger("agentguard_core")
+
+    # Storage is optional — core engine works in-memory without databases
+    try:
+        await init_db()
+        logger.info("PostgreSQL connected")
+    except Exception as e:
+        logger.warning("PostgreSQL unavailable (%s) — running in memory-only mode", e)
+
+    try:
+        await init_clickhouse()
+        logger.info("ClickHouse connected")
+    except Exception as e:
+        logger.warning("ClickHouse unavailable (%s) — traces stored in memory only", e)
+
     yield
-    await close_db()
-    await close_clickhouse()
+
+    try:
+        await close_db()
+    except Exception:
+        pass
+    try:
+        await close_clickhouse()
+    except Exception:
+        pass
 
 
 def create_app() -> FastAPI:

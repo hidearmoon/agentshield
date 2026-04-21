@@ -145,7 +145,7 @@ class Pipeline:
                 claimed = TrustLevel[client_trust_level]
             except KeyError:
                 pass  # Invalid client trust level ignored, server decides
-        trust_level = self._trust_marker.compute_trust_level(source_id or "unknown", claimed)
+        trust_level = self._trust_marker.compute_trust_level(source_id or "user_input", claimed)
 
         # Step 2: Permission check (fast, no I/O)
         available_tools = self._permission_engine.get_available_tools(

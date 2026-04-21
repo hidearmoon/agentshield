@@ -25,9 +25,30 @@ from agentguard_core.schemas.registry import SchemaRegistry
 
 @lru_cache
 def get_llm_client() -> LLMClient:
-    if settings.llm_provider == "anthropic":
+    """Get LLM client. Falls back to local stub if no API keys configured."""
+    if settings.llm_provider == "anthropic" and settings.anthropic_api_key:
         return AnthropicClient(api_key=settings.anthropic_api_key, model=settings.llm_model)
-    return OpenAIClient(api_key=settings.openai_api_key, model=settings.llm_model)
+    if settings.openai_api_key:
+        return OpenAIClient(api_key=settings.openai_api_key, model=settings.llm_model)
+    # No API key configured — use stub (Layer 3 semantic checks disabled)
+    return _StubLLMClient()
+
+
+class _StubLLMClient(LLMClient):
+    """No-op LLM client used when no API key is configured.
+
+    Layer 1 (rules) and Layer 2 (anomaly) still work. Only Layer 3
+    (semantic checking) is disabled — it returns a neutral response
+    so the pipeline continues without blocking.
+    """
+
+    async def chat(self, messages, tools=None, temperature=0.0, max_tokens=4096):
+        from agentguard_core.llm.client import LLMResponse
+        return LLMResponse(
+            content='{"intent": "unknown", "expected_tools": [], "sensitive_data_involved": false}',
+            model="stub",
+            usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+        )
 
 
 @lru_cache

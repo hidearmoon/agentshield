@@ -43,9 +43,12 @@ class TraceEngine:
         if trace:
             trace.spans.append(span)
 
-        # Persist to ClickHouse (append-only)
-        span_data = self._span_to_dict(span)
-        await clickhouse.insert_span(span_data)
+        # Persist to ClickHouse (append-only, best-effort)
+        try:
+            span_data = self._span_to_dict(span)
+            await clickhouse.insert_span(span_data)
+        except Exception:
+            pass  # Storage unavailable — span is still tracked in memory
 
     def propagate_context(
         self,
