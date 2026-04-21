@@ -144,7 +144,7 @@ provides-extras = ["dev"]
 
 [[package]]
 name = "agentguardx"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "packages/sdk-python" }
 dependencies = [
     { name = "httpx" },

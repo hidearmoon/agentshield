@@ -199,28 +199,28 @@ class ComplianceReportGenerator:
         # Filter logs by time range if specified
         logs = self._audit_logs
         if time_range_start:
-            logs = [l for l in logs if l.timestamp >= time_range_start]
+            logs = [entry for entry in logs if entry.timestamp >= time_range_start]
         if time_range_end:
-            logs = [l for l in logs if l.timestamp <= time_range_end]
+            logs = [entry for entry in logs if entry.timestamp <= time_range_end]
 
         oversight = self._oversight_events
         if time_range_start:
-            oversight = [e for e in oversight if e.timestamp >= time_range_start]
+            oversight = [evt for evt in oversight if evt.timestamp >= time_range_start]
         if time_range_end:
-            oversight = [e for e in oversight if e.timestamp <= time_range_end]
+            oversight = [evt for evt in oversight if evt.timestamp <= time_range_end]
 
         # Compute summary statistics
         total_decisions = len(logs)
-        blocked = sum(1 for l in logs if l.decision == "BLOCK")
-        confirmations = sum(1 for l in logs if l.decision == "REQUIRE_CONFIRMATION")
-        allowed = sum(1 for l in logs if l.decision == "ALLOW")
+        blocked = sum(1 for entry in logs if entry.decision == "BLOCK")
+        confirmations = sum(1 for entry in logs if entry.decision == "REQUIRE_CONFIRMATION")
+        allowed = sum(1 for entry in logs if entry.decision == "ALLOW")
         avg_drift = (
-            sum(l.intent_drift_score for l in logs) / total_decisions
+            sum(entry.intent_drift_score for entry in logs) / total_decisions
             if total_decisions > 0 else 0.0
         )
-        engines_used = {}
-        for l in logs:
-            engines_used[l.decision_engine] = engines_used.get(l.decision_engine, 0) + 1
+        engines_used: dict[str, int] = {}
+        for entry in logs:
+            engines_used[entry.decision_engine] = engines_used.get(entry.decision_engine, 0) + 1
 
         return {
             "report_metadata": {
@@ -266,16 +266,16 @@ class ComplianceReportGenerator:
                     "average_intent_drift_score": round(avg_drift, 4),
                     "decision_engines": engines_used,
                 },
-                "records": [asdict(l) for l in logs],
+                "records": [asdict(entry) for entry in logs],
             },
             "article_14_human_oversight": {
                 "total_interventions": len(oversight),
                 "intervention_types": _count_by_field(oversight, "intervention_type"),
                 "override_rate": (
-                    sum(1 for e in oversight if e.intervention_type == "override") / len(oversight)
+                    sum(1 for evt in oversight if evt.intervention_type == "override") / len(oversight)
                     if oversight else 0.0
                 ),
-                "events": [asdict(e) for e in oversight],
+                "events": [asdict(evt) for evt in oversight],
                 "capabilities": {
                     "real_time_monitoring": True,
                     "intervention_capability": True,
@@ -317,16 +317,16 @@ class ComplianceReportGenerator:
         """
         logs = self._audit_logs
         if time_range_start:
-            logs = [l for l in logs if l.timestamp >= time_range_start]
+            logs = [entry for entry in logs if entry.timestamp >= time_range_start]
         if time_range_end:
-            logs = [l for l in logs if l.timestamp <= time_range_end]
+            logs = [entry for entry in logs if entry.timestamp <= time_range_end]
 
-        lines = [json.dumps(asdict(l), separators=(",", ":")) for l in logs]
+        lines = [json.dumps(asdict(entry), separators=(",", ":")) for entry in logs]
         return "\n".join(lines)
 
     def export_oversight_log_jsonl(self) -> str:
         """Export human oversight events as JSONL."""
-        lines = [json.dumps(asdict(e), separators=(",", ":")) for e in self._oversight_events]
+        lines = [json.dumps(asdict(evt), separators=(",", ":")) for evt in self._oversight_events]
         return "\n".join(lines)
 
     # --- Metrics ---

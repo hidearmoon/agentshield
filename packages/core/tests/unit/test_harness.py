@@ -7,7 +7,7 @@ import json
 import pytest
 
 from agentguard_core.harness import AgentHarness, ToolDef
-from agentguard_core.llm.client import LLMClient, LLMMessage, LLMResponse
+from agentguard_core.llm.client import LLMClient, LLMResponse
 
 
 # ─── Mock tools ───
@@ -44,14 +44,16 @@ class AllowToolLLM(LLMClient):
             content = json.dumps({"name": self._tool_name, "arguments": self._tool_params})
         else:
             content = self._final_answer
-        return LLMResponse(content=content, model="mock", usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+        usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        return LLMResponse(content=content, model="mock", usage=usage)
 
 
 class DirectAnswerLLM(LLMClient):
     """LLM that just gives a text answer, no tool calls."""
 
     async def chat(self, messages, tools=None, temperature=0.0, max_tokens=4096):
-        return LLMResponse(content="The answer is 42.", model="mock", usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+        usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        return LLMResponse(content="The answer is 42.", model="mock", usage=usage)
 
 
 class MultiToolLLM(LLMClient):
@@ -71,7 +73,8 @@ class MultiToolLLM(LLMClient):
                 model="mock",
                 usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
             )
-        return LLMResponse(content=self._final, model="mock", usage={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+        usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        return LLMResponse(content=self._final, model="mock", usage=usage)
 
 
 # ─── Tests ───

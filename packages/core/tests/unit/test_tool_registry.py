@@ -1,6 +1,5 @@
 """Tests for MCP tool supply chain verifier."""
 
-import json
 
 import pytest
 
@@ -41,8 +40,10 @@ class TestToolRegistration:
 
     def test_register_from_mcp_listing(self, strict_verifier):
         tools = [
-            {"name": "read_file", "description": "Read a file", "inputSchema": {"path": {"type": "string"}}},
-            {"name": "write_file", "description": "Write a file", "inputSchema": {"path": {"type": "string"}, "content": {"type": "string"}}},
+            {"name": "read_file", "description": "Read a file",
+             "inputSchema": {"path": {"type": "string"}}},
+            {"name": "write_file", "description": "Write a file",
+             "inputSchema": {"path": {"type": "string"}, "content": {"type": "string"}}},
         ]
         manifests = strict_verifier.register_from_mcp_listing(tools, provider="mcp://fs")
         assert len(manifests) == 2

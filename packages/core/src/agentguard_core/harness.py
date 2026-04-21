@@ -34,15 +34,13 @@ from datetime import datetime, timezone
 from typing import Any, Callable, Coroutine
 
 from agentguard_core.engine.intent.anomaly import AnomalyDetector
-from agentguard_core.engine.intent.engine import IntentConsistencyEngine
 from agentguard_core.engine.intent.models import Decision, DecisionAction, Intent, IntentContext, ToolCall
 from agentguard_core.engine.intent.rule_engine import RuleEngine
-from agentguard_core.engine.intent.semantic import SemanticChecker
 from agentguard_core.engine.permissions.dynamic import DynamicPermissionEngine
 from agentguard_core.engine.sanitization.format_cleansing import FormatCleansingStage
 from agentguard_core.engine.trust.levels import TrustLevel
 from agentguard_core.engine.trust.marker import TrustMarker, TrustPolicy
-from agentguard_core.llm.client import LLMClient, LLMMessage, LLMResponse
+from agentguard_core.llm.client import LLMClient, LLMMessage
 
 logger = logging.getLogger(__name__)
 
@@ -149,11 +147,11 @@ class AgentHarness:
         for name, param in sig.parameters.items():
             annotation = param.annotation
             ptype = "string"
-            if annotation == int:
+            if annotation is int:
                 ptype = "integer"
-            elif annotation == float:
+            elif annotation is float:
                 ptype = "number"
-            elif annotation == bool:
+            elif annotation is bool:
                 ptype = "boolean"
             params[name] = {"type": ptype}
 
@@ -289,8 +287,10 @@ class AgentHarness:
                 messages.append(
                     LLMMessage(
                         role="user",
-                        content=f"[SECURITY] Tool call '{tool_name}' was blocked: {decision.reason}. "
-                        f"Please find an alternative approach or explain to the user why this action cannot be performed.",
+                        content=(
+                            f"[SECURITY] Tool call '{tool_name}' was blocked: {decision.reason}. "
+                            f"Please find an alternative approach or explain why this action cannot be performed."
+                        ),
                     )
                 )
             elif decision.action == DecisionAction.ALLOW:
