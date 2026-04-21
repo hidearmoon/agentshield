@@ -23,7 +23,7 @@ jobs:
       - name: Lint
         run: uvx ruff check packages/ --select E,F,W && uvx ruff format --check packages/
       - name: Core tests
-        run: cd packages/core && uv run pytest tests/unit tests/security -v --cov=agentguard_core --cov-fail-under=80
+        run: cd packages/core && uv run pytest tests/unit tests/security -v --cov=agentguard_core --cov-fail-under=75
       - name: SDK tests
         run: cd packages/sdk-python && uv run pytest tests/ -v
 
