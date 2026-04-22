@@ -31,7 +31,6 @@ session tracking, and Merkle audit trail, use Shield() instead.
 
 from __future__ import annotations
 
-import copy
 import functools
 import inspect
 import re
@@ -182,108 +181,121 @@ ESCALATION_TOOLS = {
     "assume_role",
 }
 
-BUILTIN_LOCAL_RULES: list[LocalRule] = [
-    # --- BLOCK rules (external/untrusted context) ---
-    LocalRule(
-        name="no_send_external",
-        description="Block send operations in external data context",
-        check=lambda tc, ctx: _is_external(ctx) and tc.name in SEND_TOOLS,
-        action=Decision.BLOCK,
-        reason="Send operations blocked during external data processing",
-    ),
-    LocalRule(
-        name="no_code_exec_external",
-        description="Block code execution in external data context",
-        check=lambda tc, ctx: _is_external(ctx) and tc.name in CODE_EXEC_TOOLS,
-        action=Decision.BLOCK,
-        reason="Code execution blocked during external data processing",
-    ),
-    LocalRule(
-        name="no_fs_write_untrusted",
-        description="Block file writes in untrusted context",
-        check=lambda tc, ctx: _is_untrusted(ctx) and tc.name in FS_WRITE_TOOLS,
-        action=Decision.BLOCK,
-        reason="File writes blocked in untrusted context",
-    ),
-    LocalRule(
-        name="no_network_untrusted",
-        description="Block network calls in untrusted context",
-        check=lambda tc, ctx: _is_untrusted(ctx) and tc.name in NETWORK_TOOLS,
-        action=Decision.BLOCK,
-        reason="Network operations blocked in untrusted context",
-    ),
-    LocalRule(
-        name="no_secrets_external",
-        description="Block secret access in external context",
-        check=lambda tc, ctx: _is_external(ctx) and tc.name in SECRET_TOOLS,
-        action=Decision.BLOCK,
-        reason="Secret access blocked during external data processing",
-    ),
-    LocalRule(
-        name="no_data_destruction",
-        description="Block data destruction operations",
-        check=lambda tc, ctx: tc.name in DESTRUCTIVE_TOOLS,
-        action=Decision.BLOCK,
-        reason="Data destruction requires explicit authorization",
-    ),
-    LocalRule(
-        name="no_audit_tampering",
-        description="Block audit log modification",
-        check=lambda tc, ctx: tc.name in AUDIT_TOOLS,
-        action=Decision.BLOCK,
-        reason="Audit log modification is prohibited",
-    ),
-    LocalRule(
-        name="no_escalation_external",
-        description="Block privilege escalation from external context",
-        check=lambda tc, ctx: _is_external(ctx) and tc.name in ESCALATION_TOOLS,
-        action=Decision.BLOCK,
-        reason="Privilege escalation blocked in external context",
-    ),
-    LocalRule(
-        name="no_cross_system_transfer",
-        description="Block cross-system data transfer in external context",
-        check=lambda tc, ctx: (
-            _is_external(ctx) and tc.name in {"upload_file", "sync_data", "transfer_data", "copy_to_external"}
+
+def _build_default_rules(internal_domains: set[str] | None = None) -> list[LocalRule]:
+    """Build default rules with configurable internal domains."""
+    domains = internal_domains or {"company.com", "internal.io"}
+    return list(_BUILTIN_LOCAL_RULES_TEMPLATE(domains))
+
+
+def _BUILTIN_LOCAL_RULES_TEMPLATE(domains: set[str]) -> list[LocalRule]:
+    """Generate rules with the given internal domains."""
+    return [
+        # --- BLOCK rules (external/untrusted context) ---
+        LocalRule(
+            name="no_send_external",
+            description="Block send operations in external data context",
+            check=lambda tc, ctx: _is_external(ctx) and tc.name in SEND_TOOLS,
+            action=Decision.BLOCK,
+            reason="Send operations blocked during external data processing",
         ),
-        action=Decision.BLOCK,
-        reason="Cross-system data transfer blocked in external context",
-    ),
-    # --- Pattern-based injection detection (runs before CONFIRM rules) ---
-    LocalRule(
-        name="detect_injection_in_params",
-        description="Detect common prompt injection patterns in tool parameters",
-        check=lambda tc, ctx: _has_injection_pattern(tc.params),
-        action=Decision.BLOCK,
-        reason="Potential prompt injection detected in tool parameters",
-    ),
-    # --- REQUIRE_CONFIRMATION rules ---
-    LocalRule(
-        name="confirm_permissions",
-        description="Confirm permission changes",
-        check=lambda tc, ctx: tc.name in PERMISSION_TOOLS,
-        action=Decision.REQUIRE_CONFIRMATION,
-        reason="Permission modification requires confirmation",
-    ),
-    LocalRule(
-        name="confirm_financial",
-        description="Confirm financial operations",
-        check=lambda tc, ctx: tc.name in FINANCIAL_TOOLS,
-        action=Decision.REQUIRE_CONFIRMATION,
-        reason="Financial operation requires confirmation",
-    ),
-    LocalRule(
-        name="confirm_external_email",
-        description="Confirm external email recipients",
-        check=lambda tc, ctx: (
-            tc.name == "send_email"
-            and "@" in tc.params.get("to", "")
-            and tc.params.get("to", "").split("@")[1].lower() not in {"company.com", "internal.io"}
+        LocalRule(
+            name="no_code_exec_external",
+            description="Block code execution in external data context",
+            check=lambda tc, ctx: _is_external(ctx) and tc.name in CODE_EXEC_TOOLS,
+            action=Decision.BLOCK,
+            reason="Code execution blocked during external data processing",
         ),
-        action=Decision.REQUIRE_CONFIRMATION,
-        reason="External email recipient requires confirmation",
-    ),
-]
+        LocalRule(
+            name="no_fs_write_untrusted",
+            description="Block file writes in untrusted context",
+            check=lambda tc, ctx: _is_untrusted(ctx) and tc.name in FS_WRITE_TOOLS,
+            action=Decision.BLOCK,
+            reason="File writes blocked in untrusted context",
+        ),
+        LocalRule(
+            name="no_network_untrusted",
+            description="Block network calls in untrusted context",
+            check=lambda tc, ctx: _is_untrusted(ctx) and tc.name in NETWORK_TOOLS,
+            action=Decision.BLOCK,
+            reason="Network operations blocked in untrusted context",
+        ),
+        LocalRule(
+            name="no_secrets_external",
+            description="Block secret access in external context",
+            check=lambda tc, ctx: _is_external(ctx) and tc.name in SECRET_TOOLS,
+            action=Decision.BLOCK,
+            reason="Secret access blocked during external data processing",
+        ),
+        LocalRule(
+            name="no_data_destruction",
+            description="Block data destruction operations",
+            check=lambda tc, ctx: tc.name in DESTRUCTIVE_TOOLS,
+            action=Decision.BLOCK,
+            reason="Data destruction requires explicit authorization",
+        ),
+        LocalRule(
+            name="no_audit_tampering",
+            description="Block audit log modification",
+            check=lambda tc, ctx: tc.name in AUDIT_TOOLS,
+            action=Decision.BLOCK,
+            reason="Audit log modification is prohibited",
+        ),
+        LocalRule(
+            name="no_escalation_external",
+            description="Block privilege escalation from external context",
+            check=lambda tc, ctx: _is_external(ctx) and tc.name in ESCALATION_TOOLS,
+            action=Decision.BLOCK,
+            reason="Privilege escalation blocked in external context",
+        ),
+        LocalRule(
+            name="no_cross_system_transfer",
+            description="Block cross-system data transfer in external context",
+            check=lambda tc, ctx: (
+                _is_external(ctx) and tc.name in {"upload_file", "sync_data", "transfer_data", "copy_to_external"}
+            ),
+            action=Decision.BLOCK,
+            reason="Cross-system data transfer blocked in external context",
+        ),
+        # --- Pattern-based injection detection (runs before CONFIRM rules) ---
+        LocalRule(
+            name="detect_injection_in_params",
+            description="Detect common prompt injection patterns in tool parameters",
+            check=lambda tc, ctx: _has_injection_pattern(tc.params),
+            action=Decision.BLOCK,
+            reason="Potential prompt injection detected in tool parameters",
+        ),
+        # --- REQUIRE_CONFIRMATION rules ---
+        LocalRule(
+            name="confirm_permissions",
+            description="Confirm permission changes",
+            check=lambda tc, ctx: tc.name in PERMISSION_TOOLS,
+            action=Decision.REQUIRE_CONFIRMATION,
+            reason="Permission modification requires confirmation",
+        ),
+        LocalRule(
+            name="confirm_financial",
+            description="Confirm financial operations",
+            check=lambda tc, ctx: tc.name in FINANCIAL_TOOLS,
+            action=Decision.REQUIRE_CONFIRMATION,
+            reason="Financial operation requires confirmation",
+        ),
+        LocalRule(
+            name="confirm_external_email",
+            description="Confirm external email recipients",
+            check=lambda tc, ctx, d=domains: (
+                tc.name == "send_email"
+                and "@" in tc.params.get("to", "")
+                and tc.params.get("to", "").split("@")[1].lower() not in d
+            ),
+            action=Decision.REQUIRE_CONFIRMATION,
+            reason="External email recipient requires confirmation",
+        ),
+    ]
+
+
+# Keep a module-level reference for backward compat
+BUILTIN_LOCAL_RULES: list[LocalRule] = _build_default_rules()
 
 
 _INJECTION_PATTERNS = [
@@ -367,14 +379,23 @@ class LocalShield:
         rules: list[LocalRule] | None = None,
         anomaly_threshold: float = 0.7,
         confirm_callback: Callable[[str, dict], Coroutine[Any, Any, bool]] | None = None,
+        sync_confirm_callback: Callable[[str, dict], bool] | None = None,
+        internal_domains: list[str] | None = None,
     ) -> None:
         self._trust_level = TrustLevel[trust_level]
-        self._rules = rules if rules is not None else [copy.copy(r) for r in BUILTIN_LOCAL_RULES]
         self._anomaly_threshold = anomaly_threshold
         self._confirm_callback = confirm_callback
+        self._sync_confirm_callback = sync_confirm_callback
         self._tool_history: list[str] = []
         self._intent: str = ""
         self._decisions: list[dict] = []
+
+        # Configurable internal domains (used by confirm_external_email rule)
+        domains = set(internal_domains or ["company.com", "internal.io"])
+        if rules is not None:
+            self._rules = rules
+        else:
+            self._rules = _build_default_rules(domains)
 
     # --- Trust level control ---
 
@@ -447,52 +468,113 @@ class LocalShield:
 
     def guard(
         self,
-        func: F | None = None,
+        func: Any | None = None,
         *,
         tool_name: str | None = None,
-    ) -> F | Callable[[F], F]:
+    ) -> Any:
         """Decorator that checks every call against local security rules.
 
-        Usage::
+        Works with both sync and async functions::
 
             @shield.guard
-            async def send_email(to: str, body: str) -> str:
+            def send_email(to: str, body: str) -> str:
+                ...
+
+            @shield.guard
+            async def read_inbox(limit: int = 10) -> list:
                 ...
         """
 
-        def decorator(fn: F) -> F:
+        def decorator(fn: Any) -> Any:
             resolved_name = tool_name or fn.__name__
 
-            @functools.wraps(fn)
-            async def wrapper(*args: Any, **kwargs: Any) -> Any:
-                sig = inspect.signature(fn)
-                bound = sig.bind(*args, **kwargs)
-                bound.apply_defaults()
-                params = dict(bound.arguments)
+            if inspect.iscoroutinefunction(fn):
+                # Async function
+                @functools.wraps(fn)
+                async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+                    await self._enforce_async(resolved_name, fn, args, kwargs)
+                    return await fn(*args, **kwargs)
 
-                result = self.check(resolved_name, params)
+                return async_wrapper
+            else:
+                # Sync function
+                @functools.wraps(fn)
+                def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
+                    self._enforce(resolved_name, fn, args, kwargs)
+                    return fn(*args, **kwargs)
 
-                if result.action is Decision.BLOCK:
-                    raise ToolCallBlocked(
-                        tool=resolved_name,
-                        reason=result.reason,
-                        trace_id=result.trace_id,
-                    )
-
-                if result.action is Decision.REQUIRE_CONFIRMATION:
-                    if self._confirm_callback is None:
-                        raise ConfirmationRejected(tool=resolved_name)
-                    confirmed = await self._confirm_callback(resolved_name, params)
-                    if not confirmed:
-                        raise ConfirmationRejected(tool=resolved_name)
-
-                return await fn(*args, **kwargs)
-
-            return wrapper  # type: ignore[return-value]
+                return sync_wrapper
 
         if func is not None:
             return decorator(func)
-        return decorator  # type: ignore[return-value]
+        return decorator
+
+    async def _enforce_async(self, tool_name: str, fn: Any, args: tuple, kwargs: dict) -> None:
+        """Async version of _enforce — properly awaits async confirm callbacks."""
+        sig = inspect.signature(fn)
+        bound = sig.bind(*args, **kwargs)
+        bound.apply_defaults()
+        params = dict(bound.arguments)
+
+        result = self.check(tool_name, params)
+
+        if result.action is Decision.BLOCK:
+            raise ToolCallBlocked(
+                tool=tool_name,
+                reason=result.reason,
+                trace_id=result.trace_id,
+            )
+
+        if result.action is Decision.REQUIRE_CONFIRMATION:
+            if self._confirm_callback is not None:
+                confirmed = await self._confirm_callback(tool_name, params)
+                if not confirmed:
+                    raise ConfirmationRejected(tool=tool_name)
+                return
+            if self._sync_confirm_callback is not None:
+                if not self._sync_confirm_callback(tool_name, params):
+                    raise ConfirmationRejected(tool=tool_name)
+                return
+            raise ConfirmationRejected(tool=tool_name)
+
+    def _enforce(self, tool_name: str, fn: Any, args: tuple, kwargs: dict) -> None:
+        """Run security check and raise on BLOCK/CONFIRM. Used by guard()."""
+        sig = inspect.signature(fn)
+        bound = sig.bind(*args, **kwargs)
+        bound.apply_defaults()
+        params = dict(bound.arguments)
+
+        result = self.check(tool_name, params)
+
+        if result.action is Decision.BLOCK:
+            raise ToolCallBlocked(
+                tool=tool_name,
+                reason=result.reason,
+                trace_id=result.trace_id,
+            )
+
+        if result.action is Decision.REQUIRE_CONFIRMATION:
+            # Try sync callback first, then async
+            if self._sync_confirm_callback is not None:
+                if not self._sync_confirm_callback(tool_name, params):
+                    raise ConfirmationRejected(tool=tool_name)
+                return
+            if self._confirm_callback is not None:
+                import asyncio
+
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    loop = None
+                if loop and loop.is_running():
+                    # We're in an async context — caller should use async guard
+                    raise ConfirmationRejected(tool=tool_name)
+                else:
+                    confirmed = asyncio.run(self._confirm_callback(tool_name, params))
+                    if not confirmed:
+                        raise ConfirmationRejected(tool=tool_name)
+                return
+            raise ConfirmationRejected(tool=tool_name)
 
     # --- Rules management ---
 
@@ -548,3 +630,127 @@ class LocalShield:
         """Reset history and audit log."""
         self._tool_history.clear()
         self._decisions.clear()
+
+    # --- YAML rule loading ---
+
+    def load_rules_yaml(self, yaml_str: str) -> int:
+        """Load custom rules from a YAML string.
+
+        Returns the number of rules loaded.
+
+        YAML format::
+
+            rules:
+              - name: block_competitor
+                tool: send_email
+                param_match:
+                  to: ".*@competitor\\.com$"
+                action: BLOCK
+                reason: "Competitor domain blocked"
+
+              - name: confirm_large_query
+                tool: query_database
+                param_gt:
+                  limit: 100
+                action: REQUIRE_CONFIRMATION
+                reason: "Large query needs approval"
+        """
+        import yaml
+
+        data = yaml.safe_load(yaml_str)
+        rules_data = data.get("rules", [])
+        count = 0
+        for rd in rules_data:
+            rule = _parse_yaml_rule(rd)
+            if rule:
+                self._rules.insert(0, rule)
+                count += 1
+        return count
+
+    def load_rules_file(self, path: str) -> int:
+        """Load custom rules from a YAML file. Returns count loaded."""
+        with open(path) as f:
+            return self.load_rules_yaml(f.read())
+
+
+def _parse_yaml_rule(rd: dict) -> LocalRule | None:
+    """Parse a single YAML rule definition into a LocalRule."""
+    name = rd.get("name", "")
+    if not name:
+        return None
+
+    action_str = rd.get("action", "BLOCK").upper()
+    action_map = {
+        "BLOCK": Decision.BLOCK,
+        "REQUIRE_CONFIRMATION": Decision.REQUIRE_CONFIRMATION,
+        "ALLOW": Decision.ALLOW,
+    }
+    action = action_map.get(action_str, Decision.BLOCK)
+    reason = rd.get("reason", f"Rule '{name}' triggered")
+
+    # Build check function from YAML fields
+    tool_name = rd.get("tool")
+    tool_names = rd.get("tools")
+    param_match = rd.get("param_match", {})
+    param_contains = rd.get("param_contains", {})
+    param_gt = rd.get("param_gt", {})
+    param_lt = rd.get("param_lt", {})
+    trust_levels = rd.get("trust_level", [])
+    if isinstance(trust_levels, str):
+        trust_levels = [trust_levels]
+
+    trust_values = set()
+    for tl in trust_levels:
+        try:
+            trust_values.add(TrustLevel[tl])
+        except KeyError:
+            pass
+
+    def check_fn(
+        tc: ToolCall,
+        ctx: RuleContext,
+        _tool=tool_name,
+        _tools=set(tool_names) if tool_names else None,
+        _pm=param_match,
+        _pc=param_contains,
+        _pgt=param_gt,
+        _plt=param_lt,
+        _tv=trust_values,
+    ) -> bool:
+        # Tool name filter
+        if _tool and tc.name != _tool:
+            return False
+        if _tools and tc.name not in _tools:
+            return False
+        # Trust level filter
+        if _tv and ctx.trust_level not in _tv:
+            return False
+        # Param regex match
+        for key, pattern in _pm.items():
+            val = str(tc.params.get(key, ""))
+            if not re.search(pattern, val):
+                return False
+        # Param contains
+        for key, substr in _pc.items():
+            val = str(tc.params.get(key, ""))
+            if substr not in val:
+                return False
+        # Param greater than
+        for key, threshold in _pgt.items():
+            val = tc.params.get(key, 0)
+            if not isinstance(val, (int, float)) or val <= threshold:
+                return False
+        # Param less than
+        for key, threshold in _plt.items():
+            val = tc.params.get(key, 0)
+            if not isinstance(val, (int, float)) or val >= threshold:
+                return False
+        return True
+
+    return LocalRule(
+        name=name,
+        description=rd.get("description", ""),
+        check=check_fn,
+        action=action,
+        reason=reason,
+    )
